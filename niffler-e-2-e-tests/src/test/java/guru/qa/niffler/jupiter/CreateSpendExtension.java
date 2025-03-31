@@ -19,7 +19,6 @@ public class CreateSpendExtension implements BeforeEachCallback {
 
   @Override
   public void beforeEach(ExtensionContext context) {
-    System.out.println(NAMESPACE);
     AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), Spend.class)
       .ifPresent(anno -> {
         SpendJson spendJson = new SpendJson(
