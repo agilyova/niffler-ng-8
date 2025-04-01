@@ -2,6 +2,7 @@ package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
 import com.github.javafaker.Faker;
+import guru.qa.niffler.api.validation.CategoryApiValidation;
 import guru.qa.niffler.jupiter.BrowserExtension;
 import guru.qa.niffler.jupiter.Category;
 import guru.qa.niffler.model.CategoryJson;
@@ -22,8 +23,11 @@ public class ProfileTest {
     Selenide.open(ProfilePage.URL, ProfilePage.class)
       .archiveCategory(category)
       .approveAction()
+      .toggleShowArchiveCategories()
       .checkCategoryIsArchived(category)
       .checkAllCategoriesListContainsCategory(category);
+
+    CategoryApiValidation.checkCategoryIsArchived(category);
   }
 
   @Test
@@ -40,6 +44,8 @@ public class ProfileTest {
       .approveAction()
       .checkCategoryIsActive(category)
       .checkAllCategoriesListContainsCategory(category);
+
+    CategoryApiValidation.checkCategoryIsActive(category);
   }
 
   @Test
@@ -53,8 +59,9 @@ public class ProfileTest {
     Selenide.open(ProfilePage.URL, ProfilePage.class)
       .editCategory(category)
       .updateCategoryName(newName)
-      .checkCurrentName(category, newName)
       .checkActiveCategoryListContainsCategory(newName);
+
+    CategoryApiValidation.checkCurrentName(category, newName);
   }
 
   @Test

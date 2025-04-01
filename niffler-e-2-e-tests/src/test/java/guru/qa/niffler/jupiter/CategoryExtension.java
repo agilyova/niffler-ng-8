@@ -38,8 +38,6 @@ public class CategoryExtension implements BeforeEachCallback, AfterEachCallback,
   @Override
   public void afterEach(ExtensionContext context) throws Exception {
     CategoryJson createdCategory = context.getStore(NAMESPACE).get(context.getUniqueId(), CategoryJson.class);
-    // Тут не стала проверять на заархивированность, так как у меня есть тест на исключение категории из архивных
-    // А доп запрос на проверку текущего статуса категории нет смысла отправлять
     spendApiClient.updateCategory(new CategoryJson(
       createdCategory.id(),
       createdCategory.name(),
