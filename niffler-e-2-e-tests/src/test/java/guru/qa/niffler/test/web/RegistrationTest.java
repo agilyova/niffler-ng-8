@@ -2,8 +2,8 @@ package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
 import com.github.javafaker.Faker;
-import guru.qa.niffler.jupiter.BrowserExtension;
-import guru.qa.niffler.jupiter.RandomUser;
+import guru.qa.niffler.jupiter.extension.BrowserExtension;
+import guru.qa.niffler.jupiter.annotation.RandomUser;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.RegisterPage;
 import org.junit.jupiter.api.Test;
