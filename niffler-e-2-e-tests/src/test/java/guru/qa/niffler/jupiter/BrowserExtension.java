@@ -26,7 +26,6 @@ public class BrowserExtension implements BeforeEachCallback, AfterEachCallback, 
     if (WebDriverRunner.hasWebDriverStarted()) {
       Selenide.closeWebDriver();
     }
-
   }
 
   @Override
