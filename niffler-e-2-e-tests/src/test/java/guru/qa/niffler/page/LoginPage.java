@@ -1,6 +1,7 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.SelenideElement;
+import com.codeborne.selenide.WebDriverRunner;
 import guru.qa.niffler.config.Config;
 
 import static com.codeborne.selenide.Condition.exactText;
@@ -13,7 +14,7 @@ public class LoginPage {
   private final SelenideElement submitBtn = $("button[type='submit']");
   private final SelenideElement errorMessageElement = $(".form__error");
 
-  public static final String URL = Config.getInstance().authUrl();
+  public static final String URL = Config.getInstance().authUrl() + "login";
 
   public LoginPage fillLoginForm(String username, String password) {
     usernameInput.setValue(username);
