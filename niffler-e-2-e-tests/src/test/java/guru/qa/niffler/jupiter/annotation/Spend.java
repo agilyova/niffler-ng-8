@@ -13,8 +13,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @ExtendWith(SpendExtension.class)
 public @interface Spend {
-  String username();
-
   String category();
 
   String description();

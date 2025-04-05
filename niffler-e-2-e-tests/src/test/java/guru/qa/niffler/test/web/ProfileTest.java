@@ -1,21 +1,24 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
-import com.github.javafaker.Faker;
 import guru.qa.niffler.api.validation.CategoryApiValidation;
-import guru.qa.niffler.jupiter.extension.BrowserExtension;
 import guru.qa.niffler.jupiter.annotation.Category;
+import guru.qa.niffler.jupiter.annotation.User;
+import guru.qa.niffler.jupiter.annotation.meta.WebTest;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.page.ProfilePage;
+import guru.qa.niffler.utils.RandomDataUtils;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith(BrowserExtension.class)
+@WebTest
 public class ProfileTest {
 
   @Test
-  @Category(userName = "test")
+  @User(
+    userName = "test",
+    categories = @Category()
+  )
   void activeCategoryShouldBeAbleToArchive(CategoryJson category) {
     Selenide.open(LoginPage.URL, LoginPage.class)
       .doLogin("test", "test");
@@ -31,9 +34,11 @@ public class ProfileTest {
   }
 
   @Test
-  @Category(
+  @User(
     userName = "test",
-    archived = true)
+    categories = @Category(
+      archived = true)
+  )
   void archiveCategoryShouldBeAbleToUnArchive(CategoryJson category) {
     Selenide.open(LoginPage.URL, LoginPage.class)
       .doLogin("test", "test");
@@ -49,9 +54,12 @@ public class ProfileTest {
   }
 
   @Test
-  @Category(userName = "test")
+  @User(
+    userName = "test",
+    categories = @Category()
+  )
   void activeCategoryShouldBeAbleToEdit(CategoryJson category) {
-    String newName = new Faker().book().title();
+    String newName = RandomDataUtils.randomCategoryName();
 
     Selenide.open(LoginPage.URL, LoginPage.class)
       .doLogin("test", "test");
@@ -65,9 +73,11 @@ public class ProfileTest {
   }
 
   @Test
-  @Category(
+  @User(
     userName = "test",
-    archived = true
+    categories = @Category(
+      archived = true
+    )
   )
   void archiveCategoryShouldNotBeAbleToEdit(CategoryJson category) {
     Selenide.open(LoginPage.URL, LoginPage.class)

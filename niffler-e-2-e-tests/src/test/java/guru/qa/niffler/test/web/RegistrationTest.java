@@ -1,11 +1,11 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
-import com.github.javafaker.Faker;
-import guru.qa.niffler.jupiter.extension.BrowserExtension;
 import guru.qa.niffler.jupiter.annotation.RandomUser;
+import guru.qa.niffler.jupiter.extension.BrowserExtension;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.RegisterPage;
+import guru.qa.niffler.utils.RandomDataUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -45,7 +45,7 @@ public class RegistrationTest {
       .fillRegistrationForm(
         user.getUsername(),
         user.getPassword(),
-        new Faker().internet().password())
+        RandomDataUtils.randomPassword(3, 12))
       .submitRegistration()
       .checkErrorRegisterMessageShown("Passwords should be equal");
   }
@@ -54,7 +54,7 @@ public class RegistrationTest {
   @RandomUser
   void shouldShowErrorIfUserNameLessThenThreeCharacters(UserJson user) {
 
-    user.setUsername(new Faker().lorem().characters(1,2));
+    user.setUsername(RandomDataUtils.randomString(2));
 
     Selenide.open(RegisterPage.URL, RegisterPage.class)
       .registerUser(user)
@@ -66,7 +66,7 @@ public class RegistrationTest {
   @RandomUser
   void shouldShowErrorIfPasswordLessThenThreeCharacters(UserJson user) {
 
-    user.setPassword(new Faker().internet().password(1,2));
+    user.setPassword(RandomDataUtils.randomPassword(1, 2));
 
     Selenide.open(RegisterPage.URL, RegisterPage.class)
       .registerUser(user)
