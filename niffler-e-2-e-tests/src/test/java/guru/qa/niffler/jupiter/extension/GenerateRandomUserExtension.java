@@ -1,8 +1,8 @@
 package guru.qa.niffler.jupiter.extension;
 
-import com.github.javafaker.Faker;
 import guru.qa.niffler.jupiter.annotation.RandomUser;
 import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.utils.RandomDataUtils;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
@@ -10,13 +10,12 @@ public class GenerateRandomUserExtension implements BeforeEachCallback, Paramete
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(GenerateRandomUserExtension.class);
 
   @Override
-  public void beforeEach(ExtensionContext context) throws Exception {
+  public void beforeEach(ExtensionContext context) {
     AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), RandomUser.class)
       .ifPresent(anno -> {
-        Faker faker = new Faker();
         UserJson randomUser = new UserJson(
-          faker.name().username(),
-          faker.internet().password(3,12)
+          RandomDataUtils.randomUserName(),
+          RandomDataUtils.randomPassword(3, 12)
         );
         context.getStore(NAMESPACE).put(context.getUniqueId(), randomUser);
       });
