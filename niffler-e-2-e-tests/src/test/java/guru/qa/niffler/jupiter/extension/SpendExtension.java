@@ -1,19 +1,21 @@
 package guru.qa.niffler.jupiter.extension;
 
-import guru.qa.niffler.api.SpendApiClient;
 import guru.qa.niffler.jupiter.annotation.Spend;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
+import guru.qa.niffler.service.CategoryDbClient;
+import guru.qa.niffler.service.SpendDbClient;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
 import java.util.Date;
 
-public class SpendExtension implements BeforeEachCallback, ParameterResolver {
+public class SpendExtension implements BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(SpendExtension.class);
-  private final SpendApiClient spendApiClient = new SpendApiClient();
+  private final SpendDbClient spendDbClient = new SpendDbClient();
+  private final CategoryDbClient categoryDbClient = new CategoryDbClient();
 
   @Override
   public void beforeEach(ExtensionContext context) {
@@ -37,11 +39,20 @@ public class SpendExtension implements BeforeEachCallback, ParameterResolver {
               userAnnotation.userName()
             );
 
-            SpendJson created = spendApiClient.addSpend(spendJson);
+            SpendJson created = spendDbClient.createSpend(spendJson);
             context.getStore(NAMESPACE).put(context.getUniqueId(), created);
           }
         }
       );
+  }
+
+  @Override
+  public void afterEach(ExtensionContext context) {
+    SpendJson spend = context.getStore(NAMESPACE).get(context.getUniqueId(), SpendJson.class);
+    if (spend != null) {
+      spendDbClient.deleteSpend(spend);
+      categoryDbClient.deleteCategory(spend.category());
+    }
   }
 
   @Override
