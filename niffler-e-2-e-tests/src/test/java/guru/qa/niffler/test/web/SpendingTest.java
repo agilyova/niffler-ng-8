@@ -25,7 +25,6 @@ public class SpendingTest {
       currency = CurrencyValues.RUB
     )
   )
-
   @Test
   void spendingDescriptionShouldBeUpdatedByTableAction(SpendJson spend) {
     final String newDescription = "Обучение Niffler NG";
