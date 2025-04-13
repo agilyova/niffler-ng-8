@@ -3,7 +3,7 @@ package guru.qa.niffler.test.web;
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.jupiter.annotation.RandomUser;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
-import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.model.UserJ;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.page.RegisterPage;
 import guru.qa.niffler.utils.RandomDataUtils;
@@ -15,7 +15,7 @@ public class LoginTest {
 
   @Test
   @RandomUser
-  void userShouldStayOnLoginPageAfterLoginWithBadCredentials(UserJson user) {
+  void userShouldStayOnLoginPageAfterLoginWithBadCredentials(UserJ user) {
     Selenide.open(RegisterPage.URL, RegisterPage.class)
       .registerUser(user)
       .checkSuccessRegisterMessageShown();

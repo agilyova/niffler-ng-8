@@ -3,7 +3,7 @@ package guru.qa.niffler.test.web;
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.jupiter.annotation.RandomUser;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
-import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.model.UserJ;
 import guru.qa.niffler.page.RegisterPage;
 import guru.qa.niffler.utils.RandomDataUtils;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,7 @@ public class RegistrationTest {
 
   @Test
   @RandomUser
-  void shouldRegisterNewUser(UserJson user) {
+  void shouldRegisterNewUser(UserJ user) {
 
     Selenide.open(RegisterPage.URL, RegisterPage.class)
       .fillRegistrationForm(user.getUsername(), user.getPassword(), user.getPassword())
@@ -27,7 +27,7 @@ public class RegistrationTest {
 
   @Test
   @RandomUser
-  void shouldNotRegisterUserWithExistingUserName(UserJson user) {
+  void shouldNotRegisterUserWithExistingUserName(UserJ user) {
 
     Selenide.open(RegisterPage.URL, RegisterPage.class)
       .registerUser(user)
@@ -39,7 +39,7 @@ public class RegistrationTest {
 
   @Test
   @RandomUser
-  void shouldShowErrorIfPasswordAndConfirmPasswordAreNotEqual(UserJson user) {
+  void shouldShowErrorIfPasswordAndConfirmPasswordAreNotEqual(UserJ user) {
 
     Selenide.open(RegisterPage.URL, RegisterPage.class)
       .fillRegistrationForm(
@@ -52,7 +52,7 @@ public class RegistrationTest {
 
   @Test
   @RandomUser
-  void shouldShowErrorIfUserNameLessThenThreeCharacters(UserJson user) {
+  void shouldShowErrorIfUserNameLessThenThreeCharacters(UserJ user) {
 
     user.setUsername(RandomDataUtils.randomString(2));
 
@@ -64,7 +64,7 @@ public class RegistrationTest {
 
   @Test
   @RandomUser
-  void shouldShowErrorIfPasswordLessThenThreeCharacters(UserJson user) {
+  void shouldShowErrorIfPasswordLessThenThreeCharacters(UserJ user) {
 
     user.setPassword(RandomDataUtils.randomPassword(1, 2));
 

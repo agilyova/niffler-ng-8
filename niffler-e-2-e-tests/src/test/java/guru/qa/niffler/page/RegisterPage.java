@@ -4,7 +4,7 @@ import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.model.UserJ;
 
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Selenide.$;
@@ -37,7 +37,7 @@ public class RegisterPage {
     return new LoginPage();
   }
 
-  public RegisterPage registerUser(UserJson user) {
+  public RegisterPage registerUser(UserJ user) {
     fillRegistrationForm(user.getUsername(), user.getPassword(), user.getPassword())
       .submitRegistration();
     return this;

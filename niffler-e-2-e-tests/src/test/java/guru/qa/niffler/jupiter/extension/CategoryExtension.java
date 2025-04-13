@@ -38,7 +38,7 @@ public class CategoryExtension implements BeforeEachCallback, AfterEachCallback,
     CategoryJson createdCategory = context.getStore(NAMESPACE).get(context.getUniqueId(), CategoryJson.class);
 
     if (createdCategory != null) {
-      categoryDbClient.deleteCategory(createdCategory);
+      categoryDbClient.deleteCategoryIfSpendsAbsent(createdCategory);
     }
   }
 

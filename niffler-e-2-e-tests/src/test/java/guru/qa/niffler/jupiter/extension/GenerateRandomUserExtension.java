@@ -1,7 +1,7 @@
 package guru.qa.niffler.jupiter.extension;
 
 import guru.qa.niffler.jupiter.annotation.RandomUser;
-import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.model.UserJ;
 import guru.qa.niffler.utils.RandomDataUtils;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
@@ -13,7 +13,7 @@ public class GenerateRandomUserExtension implements BeforeEachCallback, Paramete
   public void beforeEach(ExtensionContext context) {
     AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), RandomUser.class)
       .ifPresent(anno -> {
-        UserJson randomUser = new UserJson(
+        UserJ randomUser = new UserJ(
           RandomDataUtils.randomUserName(),
           RandomDataUtils.randomPassword(3, 12)
         );
@@ -23,11 +23,11 @@ public class GenerateRandomUserExtension implements BeforeEachCallback, Paramete
 
   @Override
   public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-    return parameterContext.getParameter().getType().isAssignableFrom(UserJson.class);
+    return parameterContext.getParameter().getType().isAssignableFrom(UserJ.class);
   }
 
   @Override
   public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-    return extensionContext.getStore(NAMESPACE).get(extensionContext.getUniqueId(), UserJson.class);
+    return extensionContext.getStore(NAMESPACE).get(extensionContext.getUniqueId(), UserJ.class);
   }
 }
