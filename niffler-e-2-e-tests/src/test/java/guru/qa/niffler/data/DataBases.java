@@ -16,31 +16,40 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import static java.sql.Connection.TRANSACTION_READ_COMMITTED;
+
 public class DataBases {
   private DataBases() {
   }
 
   private static final Map<String, DataSource> datasources = new ConcurrentHashMap<>();
   private static final Map<Long, Map<String, Connection>> treadConnections = new ConcurrentHashMap<>();
+  private static final int DEFAULT_ISOLATION_LEVEL = TRANSACTION_READ_COMMITTED;
 
   public record XaFunction<T>(Function<Connection, T> function, String jdbcUrl) {}
   public record XaConsumer(Consumer<Connection> consumer, String jdbcUrl) {}
 
-
   public static <T> T transaction(Function<Connection, T> function, String jdbcUrl) {
+    return transaction(function, jdbcUrl, DEFAULT_ISOLATION_LEVEL);
+  }
+
+  public static <T> T transaction(Function<Connection, T> function, String jdbcUrl, int isolationLevel) {
     Connection connection = null;
     try {
       connection = connection(jdbcUrl);
       connection.setAutoCommit(false);
+      connection.setTransactionIsolation(isolationLevel);
       T result = function.apply(connection);
       connection.commit();
-      connection.setAutoCommit(false);
+      connection.setTransactionIsolation(DEFAULT_ISOLATION_LEVEL);
+      connection.setAutoCommit(true);
       return result;
     } catch (SQLException e) {
       try {
         if (connection != null) {
           connection.rollback();
-          connection.setAutoCommit(false);
+          connection.setTransactionIsolation(DEFAULT_ISOLATION_LEVEL);
+          connection.setAutoCommit(true);
         }
       } catch (SQLException ex) {
         throw new RuntimeException(ex);
@@ -50,12 +59,18 @@ public class DataBases {
   }
 
   public static <T> T xaTransaction(XaFunction<T>... actions) {
+    return xaTransaction(DEFAULT_ISOLATION_LEVEL, actions);
+  }
+
+  public static <T> T xaTransaction(int isolationLevel, XaFunction<T>... actions) {
     UserTransaction ut = new UserTransactionImp();
     try {
       ut.begin();
       T result = null;
       for (XaFunction<T> action : actions) {
-        result = action.function.apply(connection(action.jdbcUrl));
+        Connection connection = connection(action.jdbcUrl);
+        connection.setTransactionIsolation(isolationLevel);
+        result = action.function.apply(connection);
       }
       ut.commit();
       return result;
@@ -70,18 +85,25 @@ public class DataBases {
   }
 
   public static void transaction(Consumer<Connection> consumer, String jdbcUrl) {
+    transaction(consumer, jdbcUrl, TRANSACTION_READ_COMMITTED);
+  }
+
+  public static void transaction(Consumer<Connection> consumer, String jdbcUrl, int isolationLevel) {
     Connection connection = null;
     try {
       connection = connection(jdbcUrl);
       connection.setAutoCommit(false);
+      connection.setTransactionIsolation(isolationLevel);
       consumer.accept(connection);
       connection.commit();
-      connection.setAutoCommit(false);
+      connection.setTransactionIsolation(DEFAULT_ISOLATION_LEVEL);
+      connection.setAutoCommit(true);
     } catch (SQLException e) {
       try {
         if (connection != null) {
           connection.rollback();
-          connection.setAutoCommit(false);
+          connection.setTransactionIsolation(DEFAULT_ISOLATION_LEVEL);
+          connection.setAutoCommit(true);
         }
       } catch (SQLException ex) {
         throw new RuntimeException(ex);
@@ -91,11 +113,17 @@ public class DataBases {
   }
 
   public static void xaTransaction(XaConsumer... actions) {
+    xaTransaction(DEFAULT_ISOLATION_LEVEL, actions);
+  }
+
+  public static void xaTransaction(int isolationLevel, XaConsumer... actions) {
     UserTransaction ut = new UserTransactionImp();
     try {
       ut.begin();
       for (XaConsumer action : actions) {
-        action.consumer.accept(connection(action.jdbcUrl));
+        Connection connection = connection(action.jdbcUrl);
+        connection.setTransactionIsolation(isolationLevel);
+        action.consumer.accept(connection);
       }
       ut.commit();
     } catch (Exception e) {
@@ -117,9 +145,9 @@ public class DataBases {
         dsBean.setUniqueResourceName(uniqueId);
         dsBean.setXaDataSourceClassName("org.postgresql.xa.PGXADataSource");
         Properties props = new Properties();
-        props.put("URL", jdbcUrl);
-        props.put("user", "postgres");
-        props.put("password", "secret");
+        props.setProperty("URL", key);
+        props.setProperty("user", "postgres");
+        props.setProperty("password", "secret");
         dsBean.setXaProperties(props);
         dsBean.setPoolSize(10);
         return dsBean;
@@ -141,7 +169,7 @@ public class DataBases {
     }
   }
 
-  public static Connection connection(String jdbcUrl) throws SQLException {
+  private static Connection connection(String jdbcUrl) throws SQLException {
     return treadConnections.computeIfAbsent(
       Thread.currentThread().threadId(),
       key -> {
