@@ -5,6 +5,8 @@ import guru.qa.niffler.data.entity.userAuth.AuthUserEntity;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -55,18 +57,31 @@ public class AuthUserDaoJdbc implements AuthUserDao {
 
       try (ResultSet rs = ps.getResultSet()) {
         if (rs.next()) {
-          AuthUserEntity result = new AuthUserEntity();
-          result.setId(rs.getObject("id", UUID.class));
-          result.setUsername(rs.getString("username"));
-          result.setPassword(rs.getString("password"));
-          result.setEnabled(rs.getBoolean("enabled"));
-          result.setAccountNonExpired(rs.getBoolean("account_non_expired"));
-          result.setAccountNonLocked(rs.getBoolean("account_non_locked"));
-          result.setCredentialsNonExpired(rs.getBoolean("credentials_non_expired"));
+          AuthUserEntity result = fillAuthUserEntity(rs);
           return Optional.of(result);
         } else {
           return Optional.empty();
         }
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public List<AuthUserEntity> findAll() {
+    try (PreparedStatement ps = connection.prepareStatement(
+      "SELECT * FROM \"user\""
+    )) {
+      ps.execute();
+
+      try (ResultSet rs = ps.getResultSet()) {
+        List<AuthUserEntity> resultEntityList = new ArrayList<>();
+        while (rs.next()) {
+          AuthUserEntity aue = fillAuthUserEntity(rs);
+          resultEntityList.add(aue);
+        }
+        return resultEntityList;
       }
     } catch (SQLException e) {
       throw new RuntimeException(e);
@@ -83,5 +98,17 @@ public class AuthUserDaoJdbc implements AuthUserDao {
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private static AuthUserEntity fillAuthUserEntity(ResultSet rs) throws SQLException {
+    AuthUserEntity result = new AuthUserEntity();
+    result.setId(rs.getObject("id", UUID.class));
+    result.setUsername(rs.getString("username"));
+    result.setPassword(rs.getString("password"));
+    result.setEnabled(rs.getBoolean("enabled"));
+    result.setAccountNonExpired(rs.getBoolean("account_non_expired"));
+    result.setAccountNonLocked(rs.getBoolean("account_non_locked"));
+    result.setCredentialsNonExpired(rs.getBoolean("credentials_non_expired"));
+    return  result;
   }
 }

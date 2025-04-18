@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,16 +33,16 @@ public class UserdataUserDAOSpringJdbc implements UserdataUserDAO {
             "VALUES (?, ?, ?, ?, ?, ?, ?)",
           Statement.RETURN_GENERATED_KEYS
         );
-          ps.setString(1, user.getUsername());
-          ps.setString(2, user.getCurrency().name());
-          ps.setString(3, user.getFirstname());
-          ps.setString(4, user.getSurname());
-          ps.setBytes(5, user.getPhoto());
-          ps.setBytes(6, user.getPhotoSmall());
-          ps.setString(7, user.getFullname());
-          return ps;
+        ps.setString(1, user.getUsername());
+        ps.setString(2, user.getCurrency().name());
+        ps.setString(3, user.getFirstname());
+        ps.setString(4, user.getSurname());
+        ps.setBytes(5, user.getPhoto());
+        ps.setBytes(6, user.getPhotoSmall());
+        ps.setString(7, user.getFullname());
+        return ps;
       }
-    ,kh);
+      , kh);
     user.setId((UUID) kh.getKeys().get("id"));
     return user;
   }
@@ -69,16 +70,20 @@ public class UserdataUserDAOSpringJdbc implements UserdataUserDAO {
   }
 
   @Override
+  public List<UserEntity> findAll() {
+    JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+    return jdbcTemplate.query(
+      "SELECT * FROM \"user\"",
+      UserDataUserEntityRowMapper.instance
+    );
+  }
+
+  @Override
   public void delete(UserEntity user) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
     jdbcTemplate.update(
-      con -> {
-        PreparedStatement ps = con.prepareStatement(
-          "DELETE FROM \"user\" WHERE id = ?"
-        );
-        ps.setObject(1, user.getId());
-        return ps;
-      }
+      "DELETE FROM \"user\" WHERE id = ?",
+      user.getId()
     );
   }
 }

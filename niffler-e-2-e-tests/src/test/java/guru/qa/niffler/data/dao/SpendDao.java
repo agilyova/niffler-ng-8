@@ -17,5 +17,7 @@ public interface SpendDao {
 
   List<SpendEntity> findSpendsByCategory(CategoryEntity category);
 
+  List<SpendEntity> findAll();
+
   void deleteSpend(SpendEntity spend);
 }

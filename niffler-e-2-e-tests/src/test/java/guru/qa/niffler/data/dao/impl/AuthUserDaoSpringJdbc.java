@@ -11,6 +11,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -59,18 +60,20 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
   }
 
   @Override
+  public List<AuthUserEntity> findAll() {
+    JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+    return jdbcTemplate.query(
+      "SELECT * FROM \"user\"",
+      AuthUserEntityRowMapper.instance
+    );
+  }
+
+  @Override
   public void delete(AuthUserEntity entity) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
     jdbcTemplate.update(
       "DELETE FROM \"user\" WHERE id = ?",
       entity.getId()
     );
-    jdbcTemplate.update(con -> {
-      PreparedStatement ps = con.prepareStatement(
-        "DELETE FROM \"user\" WHERE id = ?"
-      );
-      ps.setObject(1, entity.getId());
-      return ps;
-    });
   }
 }

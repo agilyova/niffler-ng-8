@@ -2,11 +2,13 @@ package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.data.dao.AuthAuthorityDao;
 import guru.qa.niffler.data.entity.userAuth.AuthorityEntity;
+import guru.qa.niffler.data.mapper.AuthorityEntityRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.List;
 
 public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
 
@@ -29,6 +31,15 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
         ps.setString(2, entity.getAuthority().name());
         return ps;
       }
+    );
+  }
+
+  @Override
+  public List<AuthorityEntity> findAll() {
+    JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+    return jdbcTemplate.query(
+      "SELECT * FROM authority",
+      AuthorityEntityRowMapper.instance
     );
   }
 
