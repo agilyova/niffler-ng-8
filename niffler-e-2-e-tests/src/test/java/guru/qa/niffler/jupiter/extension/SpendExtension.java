@@ -39,7 +39,7 @@ public class SpendExtension implements BeforeEachCallback, AfterEachCallback, Pa
               userAnnotation.userName()
             );
 
-            SpendJson created = spendDbClient.createSpend(spendJson);
+            SpendJson created = spendDbClient.create(spendJson);
             context.getStore(NAMESPACE).put(context.getUniqueId(), created);
           }
         }
@@ -50,7 +50,7 @@ public class SpendExtension implements BeforeEachCallback, AfterEachCallback, Pa
   public void afterEach(ExtensionContext context) {
     SpendJson spend = context.getStore(NAMESPACE).get(context.getUniqueId(), SpendJson.class);
     if (spend != null) {
-      spendDbClient.deleteSpend(spend);
+      spendDbClient.delete(spend);
       categoryDbClient.deleteCategoryIfSpendsAbsent(spend.category());
     }
   }
