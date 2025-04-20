@@ -2,6 +2,7 @@ package guru.qa.niffler.data.entity.userData;
 
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.model.enums.CurrencyValues;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@Data
 public class UserEntity implements Serializable {
 
   private UUID id;

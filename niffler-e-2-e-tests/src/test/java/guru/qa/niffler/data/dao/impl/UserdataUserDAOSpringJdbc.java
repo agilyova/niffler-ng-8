@@ -42,6 +42,7 @@ public class UserdataUserDAOSpringJdbc implements UserdataUserDAO {
       }
       , kh);
     user.setId((UUID) kh.getKeys().get("id"));
+    System.out.println(user);
     return user;
   }
 
