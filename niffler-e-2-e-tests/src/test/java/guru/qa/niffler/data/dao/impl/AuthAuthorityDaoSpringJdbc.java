@@ -26,7 +26,7 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
           "INSERT INTO authority (user_id, authority) VALUES (?, ?)",
           Statement.RETURN_GENERATED_KEYS
         );
-        ps.setObject(1, entity.getUserId());
+        ps.setObject(1, entity.getUser().getId());
         ps.setString(2, entity.getAuthority().name());
         return ps;
       }
@@ -41,7 +41,7 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
       new BatchPreparedStatementSetter() {
         @Override
         public void setValues(PreparedStatement ps, int i) throws SQLException {
-          ps.setObject(1, authority[i].getUserId());
+          ps.setObject(1, authority[i].getUser().getId());
           ps.setString(2, authority[i].getAuthority().name());
         }
 
