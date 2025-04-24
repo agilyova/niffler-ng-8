@@ -43,9 +43,11 @@ public class UserEntity implements Serializable {
   @Column(name = "photo_small", columnDefinition = "bytea")
   private byte[] photoSmall;
 
+  //Запросы дружить от меня и подтвержденная дружба
   @OneToMany(mappedBy = "requester", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
   private List<FriendshipEntity> friendshipRequests = new ArrayList<>();
 
+  //Приглашения дружить мне
   @OneToMany(mappedBy = "addressee", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
   private List<FriendshipEntity> friendshipAddressees = new ArrayList<>();
 
@@ -124,5 +126,17 @@ public class UserEntity implements Serializable {
     ue.setPhoto(user.photo() != null ? user.photo().getBytes() : null);
     ue.setPhotoSmall(user.photoSmall() != null ? user.photoSmall().getBytes() : null);
     return ue;
+  }
+
+  @Override
+  public String toString() {
+    return "UserEntity{" +
+      "id=" + id +
+      ", username='" + username + '\'' +
+      ", currency=" + currency +
+      ", firstname='" + firstname + '\'' +
+      ", surname='" + surname + '\'' +
+      ", fullname='" + fullname + '\'' +
+      '}';
   }
 }
