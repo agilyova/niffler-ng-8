@@ -1,6 +1,7 @@
 package guru.qa.niffler.data.entity.userData;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
@@ -11,6 +12,7 @@ import java.util.Objects;
 
 @Getter
 @Setter
+@Data
 @Entity
 @Table(name = "friendship")
 @IdClass(FriendShipId.class)

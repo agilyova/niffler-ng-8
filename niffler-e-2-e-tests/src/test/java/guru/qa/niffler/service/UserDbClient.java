@@ -4,24 +4,31 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthAuthorityDao;
 import guru.qa.niffler.data.dao.AuthUserDao;
 import guru.qa.niffler.data.dao.UserdataUserDAO;
-import guru.qa.niffler.data.dao.impl.AuthAuthorityDaoSpringJdbc;
-import guru.qa.niffler.data.dao.impl.AuthUserDaoSpringJdbc;
-import guru.qa.niffler.data.dao.impl.UserdataUserDAOSpringJdbc;
+import guru.qa.niffler.data.dao.impl.spring.AuthAuthorityDaoSpringJdbc;
+import guru.qa.niffler.data.dao.impl.spring.AuthUserDaoSpringJdbc;
+import guru.qa.niffler.data.dao.impl.spring.UserdataUserDAOSpringJdbc;
 import guru.qa.niffler.data.entity.userAuth.AuthUserEntity;
 import guru.qa.niffler.data.entity.userAuth.Authority;
 import guru.qa.niffler.data.entity.userAuth.AuthorityEntity;
 import guru.qa.niffler.data.entity.userData.UserEntity;
 import guru.qa.niffler.data.repository.AuthUserRepository;
-import guru.qa.niffler.data.repository.impl.AuthUserRepositoryJdbc;
+import guru.qa.niffler.data.repository.UserdataUserRepository;
+import guru.qa.niffler.data.repository.impl.jdbc.AuthUserRepositoryJdbc;
+import guru.qa.niffler.data.repository.impl.jdbc.UserdataUserRepositoryJdbc;
+import guru.qa.niffler.data.repository.impl.spring.AuthUserRepositorySpringJdbc;
+import guru.qa.niffler.data.repository.impl.spring.UserdataRepositorySpringJdbc;
 import guru.qa.niffler.data.tpl.DataSources;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.UserJson;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Arrays;
+import java.util.Optional;
+import java.util.UUID;
 
 public class UserDbClient {
 
@@ -33,6 +40,10 @@ public class UserDbClient {
   private final UserdataUserDAO udUserDao = new UserdataUserDAOSpringJdbc();
 
   private final AuthUserRepository authUserRepo = new AuthUserRepositoryJdbc();
+  private final UserdataUserRepository userdataUserRepo = new UserdataUserRepositoryJdbc();
+
+  private final AuthUserRepository authUserSpringRepo = new AuthUserRepositorySpringJdbc();
+  private final UserdataUserRepository userdataUserSpringRepo = new UserdataRepositorySpringJdbc();
 
   private final TransactionTemplate txTemplate = new TransactionTemplate(
     new JdbcTransactionManager(
@@ -96,9 +107,128 @@ public class UserDbClient {
 
         authUserRepo.create(authUser);
         return UserJson.fromEntity(
-          udUserDao.create(UserEntity.fromJson(user))
+          userdataUserRepo.create(UserEntity.fromJson(user))
         );
       }
     );
+  }
+
+  public UserEntity findUserByIdRepo(UUID id) {
+    return xaTransactionTemplate.execute(() -> {
+        Optional<UserEntity> findedUe = userdataUserRepo.findById(id);
+        if (findedUe.isPresent()) {
+          return findedUe.get();
+        } else return null;
+      }
+    );
+  }
+
+  public void addInvitationRepo(UserJson requester, UserJson addressee) {
+    xaTransactionTemplate.execute(() -> {
+        UserEntity reqEntity = UserEntity.fromJson(requester);
+        UserEntity addrEntity = UserEntity.fromJson(addressee);
+        userdataUserRepo.addInvitation(reqEntity, addrEntity);
+
+        reqEntity.getFriendshipRequests().forEach(System.out::println);
+        addrEntity.getFriendshipRequests().forEach(System.out::println);
+
+        return null;
+      }
+    );
+  }
+
+  public void addFriendRepo(UserJson requester, UserJson addressee) {
+    xaTransactionTemplate.execute(() -> {
+      UserEntity reqEntity = UserEntity.fromJson(requester);
+      UserEntity addrEntity = UserEntity.fromJson(addressee);
+
+      if (requester.id() == null || addressee.id() == null) {
+        throw new IllegalArgumentException("User id should be not null");
+      }
+
+      userdataUserRepo.addFriend(reqEntity, addrEntity);
+
+      reqEntity.getFriendshipRequests().forEach(System.out::println);
+      addrEntity.getFriendshipRequests().forEach(System.out::println);
+
+      return null;
+    });
+  }
+
+  public UserJson createUserSpringRepo(UserJson user) {
+    return xaTransactionTemplate.execute(() -> {
+        AuthUserEntity authUser = new AuthUserEntity();
+        authUser.setUsername(user.username());
+        authUser.setPassword(pe.encode("12345"));
+        authUser.setEnabled(true);
+        authUser.setAccountNonExpired(true);
+        authUser.setAccountNonLocked(true);
+        authUser.setCredentialsNonExpired(true);
+        authUser.setAuthorities(
+          Arrays.stream(Authority.values()).map(
+            e -> {
+              AuthorityEntity ae = new AuthorityEntity();
+              ae.setUser(authUser);
+              ae.setAuthority(e);
+              return ae;
+            }
+          ).toList()
+        );
+
+        AuthUserEntity createdAuthUserEntity = authUserSpringRepo.create(authUser);
+        System.out.println(createdAuthUserEntity.getAuthorities());
+        return UserJson.fromEntity(
+          userdataUserSpringRepo.create(UserEntity.fromJson(user))
+        );
+      }
+    );
+  }
+
+  public AuthUserEntity findAuthUserByIdSpringRepo(UUID id) {
+    return xaTransactionTemplate.execute(() -> {
+        Optional<AuthUserEntity> authUserEntity = authUserSpringRepo.findById(id);
+        return authUserEntity.orElse(null);
+      }
+    );
+  }
+
+  public UserEntity findUserByIdSpringRepo(UUID id) {
+    return xaTransactionTemplate.execute(() -> {
+        Optional<UserEntity> findedUe = userdataUserSpringRepo.findById(id);
+        return findedUe.orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+      }
+    );
+  }
+
+  public void addInvitationSpringRepo(UserJson requester, UserJson addressee) {
+    xaTransactionTemplate.execute(() -> {
+        UserEntity reqEntity = UserEntity.fromJson(requester);
+        UserEntity addrEntity = UserEntity.fromJson(addressee);
+        userdataUserSpringRepo.addInvitation(reqEntity, addrEntity);
+
+        reqEntity.getFriendshipRequests().forEach(System.out::println);
+        addrEntity.getFriendshipRequests().forEach(System.out::println);
+
+        return null;
+      }
+    );
+  }
+
+  public void addFriendSpringRepo(UserJson requester, UserJson addressee) {
+    xaTransactionTemplate.execute(() -> {
+      UserEntity reqEntity = UserEntity.fromJson(requester);
+      UserEntity addrEntity = UserEntity.fromJson(addressee);
+
+      if (requester.id() == null || addressee.id() == null) {
+        throw new IllegalArgumentException("User id should be not null");
+      }
+
+      userdataUserSpringRepo.addFriend(reqEntity, addrEntity);
+
+      reqEntity.getFriendshipRequests().forEach(System.out::println);
+      addrEntity.getFriendshipRequests().forEach(System.out::println);
+
+      return null;
+    });
   }
 }
