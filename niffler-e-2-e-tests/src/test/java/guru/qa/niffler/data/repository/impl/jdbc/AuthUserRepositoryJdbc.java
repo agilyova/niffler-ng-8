@@ -1,11 +1,14 @@
 package guru.qa.niffler.data.repository.impl.jdbc;
 
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.data.dao.AuthUserDao;
+import guru.qa.niffler.data.dao.impl.jdbc.AuthUserDaoJdbc;
 import guru.qa.niffler.data.entity.userAuth.AuthUserEntity;
 import guru.qa.niffler.data.entity.userAuth.Authority;
 import guru.qa.niffler.data.entity.userAuth.AuthorityEntity;
 import guru.qa.niffler.data.mapper.AuthUserEntityRowMapper;
 import guru.qa.niffler.data.repository.AuthUserRepository;
+import org.jetbrains.annotations.NotNull;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,6 +23,7 @@ import static guru.qa.niffler.data.tpl.Connections.holder;
 
 public class AuthUserRepositoryJdbc implements AuthUserRepository {
   private static final Config CFG = Config.getInstance();
+  private final AuthUserDao authUserDao = new AuthUserDaoJdbc();
 
   @Override
   public AuthUserEntity create(AuthUserEntity entity) {
@@ -45,7 +49,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
         }
         entity.setId(generatedKey);
 
-        for (AuthorityEntity a : entity.getAuthorities() ) {
+        for (AuthorityEntity a : entity.getAuthorities()) {
           authorityPs.setObject(1, generatedKey);
           authorityPs.setString(2, a.getAuthority().name());
           authorityPs.addBatch();
@@ -60,35 +64,25 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
   }
 
   @Override
+  public AuthUserEntity update(AuthUserEntity user) {
+    authUserDao.update(user);
+    return user;
+  }
+
+  @Override
   public Optional<AuthUserEntity> findById(UUID id) {
     try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
-      "SELECT * FROM \"user\" u " +
+      "SELECT u.*, " +
+        "a.id AS auth_id," +
+        "a.authority" +
+        " FROM \"user\" u " +
         "JOIN authority a ON u.id = a.user_id " +
         "WHERE u.id = ?"
     )) {
       ps.setObject(1, id);
       ps.execute();
 
-      try (ResultSet rs = ps.getResultSet()) {
-        AuthUserEntity user = null;
-        List<AuthorityEntity> authorityEntities = new ArrayList<>();
-        while (rs.next()) {
-          if (user == null) {
-            user = AuthUserEntityRowMapper.instance.mapRow(rs, 1);
-          }
-          AuthorityEntity ae = new AuthorityEntity();
-          ae.setUser(user);
-          ae.setId(rs.getObject("a.id", UUID.class));
-          ae.setAuthority(Authority.valueOf(rs.getString("authority")));
-          authorityEntities.add(ae);
-        }
-        if (user == null) {
-          return Optional.empty();
-        } else {
-          user.setAuthorities(authorityEntities);
-          return Optional.of(user);
-        }
-      }
+      return getAuthUserEntity(ps);
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
@@ -96,6 +90,59 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
 
   @Override
   public Optional<AuthUserEntity> findByUsername(String userName) {
-    return Optional.empty();
+    try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+      "SELECT u.*, " +
+        "a.id AS auth_id," +
+        "a.authority" +
+        " FROM \"user\" u " +
+        "JOIN authority a ON u.id = a.user_id " +
+        "WHERE u.username = ?"
+    )) {
+      ps.setString(1, userName);
+      ps.execute();
+
+      return getAuthUserEntity(ps);
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public void remove(AuthUserEntity user) {
+    try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+      "WITH deleted_authority AS " +
+        "(DELETE FROM authority WHERE user_id = ?) " +
+        "DELETE FROM \"user\" WHERE id = ?"
+    )) {
+      ps.setObject(1, user.getId());
+      ps.setObject(2, user.getId());
+      ps.executeUpdate();
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @NotNull
+  private Optional<AuthUserEntity> getAuthUserEntity(PreparedStatement ps) throws SQLException {
+    try (ResultSet rs = ps.getResultSet()) {
+      AuthUserEntity user = null;
+      List<AuthorityEntity> authorityEntities = new ArrayList<>();
+      while (rs.next()) {
+        if (user == null) {
+          user = AuthUserEntityRowMapper.instance.mapRow(rs, 1);
+        }
+        AuthorityEntity ae = new AuthorityEntity();
+        ae.setUser(user);
+        ae.setId(rs.getObject("auth_id", UUID.class));
+        ae.setAuthority(Authority.valueOf(rs.getString("authority")));
+        authorityEntities.add(ae);
+      }
+      if (user == null) {
+        return Optional.empty();
+      } else {
+        user.setAuthorities(authorityEntities);
+        return Optional.of(user);
+      }
+    }
   }
 }

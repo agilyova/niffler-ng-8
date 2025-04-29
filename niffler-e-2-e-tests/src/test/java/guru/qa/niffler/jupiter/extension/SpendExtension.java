@@ -5,7 +5,7 @@ import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.service.CategoryDbClient;
-import guru.qa.niffler.service.SpendDbClient;
+import guru.qa.niffler.service.impl.SpendDbClient;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
@@ -50,7 +50,7 @@ public class SpendExtension implements BeforeEachCallback, AfterEachCallback, Pa
   public void afterEach(ExtensionContext context) {
     SpendJson spend = context.getStore(NAMESPACE).get(context.getUniqueId(), SpendJson.class);
     if (spend != null) {
-      spendDbClient.delete(spend);
+      spendDbClient.remove(spend);
       categoryDbClient.deleteCategoryIfSpendsAbsent(spend.category());
     }
   }

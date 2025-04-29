@@ -75,4 +75,17 @@ public class SpendEntity implements Serializable {
     );
     return se;
   }
+
+  @Override
+  public String toString() {
+    return "SpendEntity{" +
+      "id=" + id +
+      ", username='" + username + '\'' +
+      ", currency=" + currency +
+      ", spendDate=" + spendDate +
+      ", amount=" + amount +
+      ", description='" + description + '\'' +
+      ", category=" + category +
+      '}';
+  }
 }
