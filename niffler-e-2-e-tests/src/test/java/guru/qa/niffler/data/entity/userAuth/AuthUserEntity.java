@@ -1,7 +1,6 @@
 package guru.qa.niffler.data.entity.userAuth;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;

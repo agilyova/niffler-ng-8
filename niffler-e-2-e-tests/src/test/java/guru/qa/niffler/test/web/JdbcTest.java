@@ -33,17 +33,7 @@ public class JdbcTest {
   void shouldCreateWithUserRepo() {
     UserDbClient usersDbClient = new UserDbClient();
 
-    UserJson user = new UserJson(
-      null,
-      RandomDataUtils.randomUserName(),
-      null,
-      null,
-      null,
-      CurrencyValues.EUR,
-      null,
-      null
-    );
-    UserJson createdUser = usersDbClient.createUserRepo(user);
+    UserJson createdUser = usersDbClient.createUserRepo(RandomDataUtils.randomUserName(), "12345");
     System.out.println(createdUser);
   }
 
@@ -62,31 +52,11 @@ public class JdbcTest {
   @Test
   void addInvitationRepo() {
     UserDbClient userDbClient = new UserDbClient();
-    UserJson requester = new UserJson(
-      null,
-      RandomDataUtils.randomUserName(),
-      null,
-      null,
-      null,
-      CurrencyValues.EUR,
-      null,
-      null
-    );
-    UserJson addressee = new UserJson(
-      null,
-      RandomDataUtils.randomUserName(),
-      null,
-      null,
-      null,
-      CurrencyValues.EUR,
-      null,
-      null
-    );
-    System.out.println(requester);
-    System.out.println(addressee);
 
-    UserJson createdRequester = userDbClient.createUserRepo(requester);
-    UserJson createdAddressee = userDbClient.createUserRepo(addressee);
+    UserJson createdRequester = userDbClient.createUserRepo(RandomDataUtils.randomUserName(), "13245");
+    UserJson createdAddressee = userDbClient.createUserRepo(RandomDataUtils.randomUserName(), "13245");
+    System.out.println(createdRequester);
+    System.out.println(createdAddressee);
 
     userDbClient.addInvitationRepo(createdRequester, createdAddressee);
   }
@@ -122,33 +92,14 @@ public class JdbcTest {
 
   @Test
   void addFriendRepo() {
-      UserDbClient userDbClient = new UserDbClient();
-      UserJson requester = new UserJson(
-        null,
-        RandomDataUtils.randomUserName(),
-        null,
-        null,
-        null,
-        CurrencyValues.EUR,
-        null,
-        null
-      );
-      UserJson addressee = new UserJson(
-        null,
-        RandomDataUtils.randomUserName(),
-        null,
-        null,
-        null,
-        CurrencyValues.EUR,
-        null,
-        null
-      );
-      System.out.println(requester);
-      System.out.println(addressee);
-      UserJson createdRequester = userDbClient.createUserRepo(requester);
-      UserJson createdAddressee = userDbClient.createUserRepo(addressee);
+    UserDbClient userDbClient = new UserDbClient();
 
-      userDbClient.addFriendRepo(createdRequester, createdAddressee);
+    UserJson createdRequester = userDbClient.createUserRepo(RandomDataUtils.randomUserName(), "12345");
+    UserJson createdAddressee = userDbClient.createUserRepo(RandomDataUtils.randomUserName(), "12345");
+    System.out.println(createdRequester);
+    System.out.println(createdAddressee);
+
+    userDbClient.addFriendRepo(createdRequester, createdAddressee);
   }
 
   @Test
@@ -253,30 +204,11 @@ public class JdbcTest {
   @Test
   void addFriendSpringRepo() {
     UserDbClient userDbClient = new UserDbClient();
-    UserJson requester = new UserJson(
-      null,
-      RandomDataUtils.randomUserName(),
-      null,
-      null,
-      null,
-      CurrencyValues.EUR,
-      null,
-      null
-    );
-    UserJson addressee = new UserJson(
-      null,
-      RandomDataUtils.randomUserName(),
-      null,
-      null,
-      null,
-      CurrencyValues.EUR,
-      null,
-      null
-    );
-    System.out.println(requester);
-    System.out.println(addressee);
-    UserJson createdRequester = userDbClient.createUserRepo(requester);
-    UserJson createdAddressee = userDbClient.createUserRepo(addressee);
+
+    UserJson createdRequester = userDbClient.createUserRepo(RandomDataUtils.randomUserName(), "12345");
+    UserJson createdAddressee = userDbClient.createUserRepo(RandomDataUtils.randomUserName(), "12345");
+    System.out.println(createdRequester);
+    System.out.println(createdAddressee);
 
     userDbClient.addFriendSpringRepo(createdRequester, createdAddressee);
   }

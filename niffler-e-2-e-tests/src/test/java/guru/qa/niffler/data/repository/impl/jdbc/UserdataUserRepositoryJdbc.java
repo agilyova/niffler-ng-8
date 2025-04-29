@@ -7,7 +7,10 @@ import guru.qa.niffler.data.entity.userData.UserEntity;
 import guru.qa.niffler.data.repository.UserdataUserRepository;
 import guru.qa.niffler.model.enums.CurrencyValues;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -105,6 +108,11 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  @Override
+  public Optional<UserEntity> findByUsername(String username) {
+    return Optional.empty();
   }
 
   @Override

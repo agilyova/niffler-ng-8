@@ -13,6 +13,8 @@ import guru.qa.niffler.data.entity.userAuth.AuthorityEntity;
 import guru.qa.niffler.data.entity.userData.UserEntity;
 import guru.qa.niffler.data.repository.AuthUserRepository;
 import guru.qa.niffler.data.repository.UserdataUserRepository;
+import guru.qa.niffler.data.repository.impl.hibernate.AuthUserRepositoryHibernate;
+import guru.qa.niffler.data.repository.impl.hibernate.UserdataUserRepositoryHibernate;
 import guru.qa.niffler.data.repository.impl.jdbc.AuthUserRepositoryJdbc;
 import guru.qa.niffler.data.repository.impl.jdbc.UserdataUserRepositoryJdbc;
 import guru.qa.niffler.data.repository.impl.spring.AuthUserRepositorySpringJdbc;
@@ -20,6 +22,8 @@ import guru.qa.niffler.data.repository.impl.spring.UserdataRepositorySpringJdbc;
 import guru.qa.niffler.data.tpl.DataSources;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.model.enums.CurrencyValues;
+import guru.qa.niffler.utils.RandomDataUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -45,6 +49,9 @@ public class UserDbClient {
   private final AuthUserRepository authUserSpringRepo = new AuthUserRepositorySpringJdbc();
   private final UserdataUserRepository userdataUserSpringRepo = new UserdataRepositorySpringJdbc();
 
+  private final UserdataUserRepository userdataUserRepository = new UserdataUserRepositoryHibernate();
+  private final AuthUserRepository authUserRepository = new AuthUserRepositoryHibernate();
+
   private final TransactionTemplate txTemplate = new TransactionTemplate(
     new JdbcTransactionManager(
       DataSources.dataSource(CFG.authJdbcUrl())
@@ -55,6 +62,27 @@ public class UserDbClient {
     CFG.authJdbcUrl(),
     CFG.userdataJdbcUrl()
   );
+
+  private AuthUserEntity authUserEntity(String username, String password) {
+    AuthUserEntity authUser = new AuthUserEntity();
+    authUser.setUsername(username);
+    authUser.setPassword(pe.encode(password));
+    authUser.setEnabled(true);
+    authUser.setAccountNonExpired(true);
+    authUser.setAccountNonLocked(true);
+    authUser.setCredentialsNonExpired(true);
+    authUser.setAuthorities(
+      Arrays.stream(Authority.values()).map(
+        e -> {
+          AuthorityEntity ae = new AuthorityEntity();
+          ae.setUser(authUser);
+          ae.setAuthority(e);
+          return ae;
+        }
+      ).toList()
+    );
+    return authUser;
+  }
 
   public UserJson createUser(UserJson user) {
     return xaTransactionTemplate.execute(() -> {
@@ -85,11 +113,11 @@ public class UserDbClient {
     );
   }
 
-  public UserJson createUserRepo(UserJson user) {
+  public UserJson createUserRepo(String username, String password) {
     return xaTransactionTemplate.execute(() -> {
         AuthUserEntity authUser = new AuthUserEntity();
-        authUser.setUsername(user.username());
-        authUser.setPassword(pe.encode("12345"));
+        authUser.setUsername(username);
+        authUser.setPassword(pe.encode(password));
         authUser.setEnabled(true);
         authUser.setAccountNonExpired(true);
         authUser.setAccountNonLocked(true);
@@ -107,10 +135,37 @@ public class UserDbClient {
 
         authUserRepo.create(authUser);
         return UserJson.fromEntity(
-          userdataUserRepo.create(UserEntity.fromJson(user))
+          userdataUserRepo.create(userEntity(username))
         );
       }
     );
+  }
+
+  public void addInvitation(UserJson targetUser, int count) {
+    if (count > 0) {
+      UserEntity targetEntity = userdataUserRepository.findById(
+        targetUser.id()
+      ).orElseThrow();
+
+      for (int i = 0; i < count; i++) {
+        xaTransactionTemplate.execute(() -> {
+            String username = RandomDataUtils.randomUserName();
+            AuthUserEntity authUser = authUserEntity(username, "12345");
+            authUserRepository.create(authUser);
+            UserEntity adressee = userdataUserRepository.create(userEntity(username));
+            userdataUserRepository.addInvitation(targetEntity, adressee);
+            return null;
+          }
+        );
+      }
+    }
+  }
+
+  private UserEntity userEntity(String username) {
+    UserEntity ue = new UserEntity();
+    ue.setUsername(username);
+    ue.setCurrency(CurrencyValues.RUB);
+    return ue;
   }
 
   public UserEntity findUserByIdRepo(UUID id) {

@@ -11,10 +11,9 @@ public interface UserdataUserRepository {
 
   Optional<UserEntity> findById(UUID id);
 
+  Optional<UserEntity> findByUsername(String username);
+
   void addInvitation(UserEntity requester, UserEntity addressee);
 
   void addFriend(UserEntity requester, UserEntity addressee);
-
-  //В ДЗ есть этот метод, но он не имеет смысла
-  //void addOutcomeInvitation(UserEntity requester, UserEntity addressee);
 }

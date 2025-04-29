@@ -44,4 +44,9 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
       AuthUserEntityExtractor.instance,
       id));
   }
+
+  @Override
+  public Optional<AuthUserEntity> findByUsername(String userName) {
+    return Optional.empty();
+  }
 }
