@@ -5,6 +5,7 @@ import guru.qa.niffler.data.entity.userAuth.AuthorityEntity;
 import java.util.List;
 
 public interface AuthAuthorityDao {
+
   void create(AuthorityEntity entity);
 
   void create(AuthorityEntity... authority);

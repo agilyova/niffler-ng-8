@@ -12,6 +12,7 @@ import guru.qa.niffler.data.repository.AuthUserRepository;
 import guru.qa.niffler.data.tpl.DataSources;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.sql.PreparedStatement;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,6 +26,12 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
     AuthUserEntity createdUserEntity = authUserDao.create(entity);
     authAuthorityDao.create(entity.getAuthorities().toArray(new AuthorityEntity[0]));
     return createdUserEntity;
+  }
+
+  @Override
+  public AuthUserEntity update(AuthUserEntity user) {
+    authUserDao.update(user);
+    return user;
   }
 
   @Override
@@ -47,6 +54,34 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
 
   @Override
   public Optional<AuthUserEntity> findByUsername(String userName) {
-    return Optional.empty();
+    JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
+    return Optional.ofNullable(jdbcTemplate.query(
+      "SELECT u.id, " +
+        "       u.username, " +
+        "       u.password, " +
+        "       u.enabled, " +
+        "       u.account_non_expired, " +
+        "       u.account_non_locked, " +
+        "       u.credentials_non_expired, " +
+        "       a.id as auth_id, " +
+        "       authority " +
+        "FROM \"user\" u join authority a on u.id = a.user_id WHERE u.username = ?",
+      AuthUserEntityExtractor.instance,
+      userName));
+  }
+
+  @Override
+  public void remove(AuthUserEntity user) {
+    JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
+    jdbcTemplate.update(con -> {
+      PreparedStatement ps = con.prepareStatement(
+        "WITH deleted_authority AS " +
+          "(DELETE FROM authority WHERE user_id = ?) " +
+          "DELETE FROM \"user\" WHERE id = ?"
+      );
+      ps.setObject(1, user.getId());
+      ps.setObject(2, user.getId());
+      return ps;
+    });
   }
 }

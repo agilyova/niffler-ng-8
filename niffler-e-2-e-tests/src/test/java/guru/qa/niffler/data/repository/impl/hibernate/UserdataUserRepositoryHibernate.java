@@ -32,7 +32,7 @@ public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
   public Optional<UserEntity> findByUsername(String username) {
     try {
       return Optional.of(em.createQuery(
-          "SELECT U FROM UserEntity u WHERE u.username =: username", UserEntity.class)
+          "SELECT u FROM UserEntity u WHERE u.username =: username", UserEntity.class)
         .setParameter("username", username)
         .getSingleResult());
     } catch (NoResultException e) {
@@ -41,15 +41,30 @@ public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
   }
 
   @Override
+  public UserEntity update(UserEntity user) {
+    em.joinTransaction();
+    em.merge(user);
+    return user;
+  }
+
+  @Override
   public void addInvitation(UserEntity requester, UserEntity addressee) {
     em.joinTransaction();
-    requester.addInvitations(addressee);
-
+    //см. реализацию addInvitations в UserEntity → fe.setAddressee(this);
+    addressee.addInvitations(requester);
   }
 
   @Override
   public void addFriend(UserEntity requester, UserEntity addressee) {
     em.joinTransaction();
     requester.addFriends(FriendshipStatus.ACCEPTED, addressee);
+    addressee.addFriends(FriendshipStatus.ACCEPTED, requester);
+  }
+
+  @Override
+  public void remove(UserEntity user) {
+    em.joinTransaction();
+    UserEntity managed = em.contains(user) ? user : em.merge(user);
+    em.remove(managed);
   }
 }
