@@ -183,17 +183,11 @@ public class UserdataRepositorySpringJdbc implements UserdataUserRepository {
   @Override
   public void remove(UserEntity user) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
-    jdbcTemplate.update(con -> {
-        PreparedStatement ps = con.prepareStatement(
-          "WITH deleteted_friendship AS " +
-            "(DELETE FROM friendship WHERE requester_id = ? OR addressee_id = ?)" +
-            "DELETE FROM \"user\" WHERE id = ?"
-        );
-        ps.setObject(1, user.getId());
-        ps.setObject(2, user.getId());
-        ps.setObject(3, user.getId());
-        return ps;
-      }
+    jdbcTemplate.update(
+      "WITH deleteted_friendship AS " +
+        "(DELETE FROM friendship WHERE requester_id = ? OR addressee_id = ?)" +
+        "DELETE FROM \"user\" WHERE id = ?",
+      user.getId(), user.getId(), user.getId()
     );
   }
 }

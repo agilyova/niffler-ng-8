@@ -133,6 +133,7 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
         friendShipPs.setObject(2, fe.getAddressee().getId());
         friendShipPs.setString(3, fe.getStatus().name());
         friendShipPs.setString(4, fe.getStatus().name());
+        friendShipPs.addBatch();
         friendShipPs.clearParameters();
       }
 
@@ -141,6 +142,7 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
         friendShipPs.setObject(2, fe.getAddressee().getId());
         friendShipPs.setString(3, fe.getStatus().name());
         friendShipPs.setString(4, fe.getStatus().name());
+        friendShipPs.addBatch();
         friendShipPs.clearParameters();
       }
       friendShipPs.executeBatch();
