@@ -1,10 +1,19 @@
 package guru.qa.niffler.service;
 
+import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
+
+import java.util.List;
 
 public interface SpendClient {
 
-  SpendJson create(SpendJson spend);
+  SpendJson createSpend(SpendJson spend);
 
-  void remove(SpendJson spend);
+  CategoryJson createCategory(CategoryJson category);
+
+  List<SpendJson> findSpendingsByCategory(CategoryJson categoryJson);
+
+  void removeSpend(SpendJson spend);
+
+  void removeCategory(CategoryJson category);
 }

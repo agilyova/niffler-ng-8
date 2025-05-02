@@ -6,7 +6,9 @@ import guru.qa.niffler.data.entity.userAuth.Authority;
 import guru.qa.niffler.data.entity.userAuth.AuthorityEntity;
 import guru.qa.niffler.data.entity.userData.UserEntity;
 import guru.qa.niffler.data.repository.AuthUserRepository;
+import guru.qa.niffler.data.repository.SpendRepository;
 import guru.qa.niffler.data.repository.UserdataUserRepository;
+import guru.qa.niffler.data.repository.impl.hibernate.SpendRepositoryHibernate;
 import guru.qa.niffler.data.repository.impl.jdbc.AuthUserRepositoryJdbc;
 import guru.qa.niffler.data.repository.impl.jdbc.UserdataUserRepositoryJdbc;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
@@ -36,6 +38,7 @@ public class UsersDbClient implements UsersClient {
 
   private final AuthUserRepository authUserRepo = new AuthUserRepositoryJdbc();
   private final UserdataUserRepository userdataUserRepo = new UserdataUserRepositoryJdbc();
+  private final SpendRepository spendRepository = new SpendRepositoryHibernate();
 
   private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(
     CFG.authJdbcUrl(),
@@ -113,6 +116,7 @@ public class UsersDbClient implements UsersClient {
     }
   }
 
+  //Todo так же удалять и spending, и categories
   @Override
   public void remove(UserJson user) {
     xaTransactionTemplate.execute(() -> {

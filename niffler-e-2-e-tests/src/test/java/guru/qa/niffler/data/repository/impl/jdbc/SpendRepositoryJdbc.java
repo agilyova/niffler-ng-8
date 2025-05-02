@@ -14,6 +14,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,7 +28,7 @@ public class SpendRepositoryJdbc implements SpendRepository {
   SpendDao spendDao = new SpendDaoJdbc();
 
   @Override
-  public SpendEntity create(SpendEntity spend) {
+  public SpendEntity createSpend(SpendEntity spend) {
 
     CategoryEntity category = spend.getCategory();
 
@@ -45,7 +46,7 @@ public class SpendRepositoryJdbc implements SpendRepository {
   }
 
   @Override
-  public SpendEntity update(SpendEntity spend) {
+  public SpendEntity updateSpend(SpendEntity spend) {
     try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
       "UPDATE spend " +
         "SET username = ?," +
@@ -88,7 +89,7 @@ public class SpendRepositoryJdbc implements SpendRepository {
   }
 
   @Override
-  public Optional<SpendEntity> findById(UUID id) {
+  public Optional<SpendEntity> findSpendById(UUID id) {
     try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
       "SELECT s.*," +
         "c.id AS category_id, " +
@@ -117,7 +118,12 @@ public class SpendRepositoryJdbc implements SpendRepository {
   }
 
   @Override
-  public Optional<SpendEntity> findByUsernameAndSpendDescription(String username, String description) {
+  public List<SpendEntity> findSpendingsByCategory(CategoryEntity categoryEntity) {
+    return spendDao.findByCategory(categoryEntity);
+  }
+
+  @Override
+  public Optional<SpendEntity> findSpendByUsernameAndSpendDescription(String username, String description) {
     try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
       "SELECT s.*," +
         "c.id AS category_id, " +

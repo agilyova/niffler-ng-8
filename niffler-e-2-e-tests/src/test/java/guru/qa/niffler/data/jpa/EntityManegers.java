@@ -26,4 +26,8 @@ public class EntityManegers {
       ).createEntityManager()
     );
   }
+
+  public static void closeAllEmfs() {
+    emfs.values().forEach(EntityManagerFactory::close);
+  }
 }

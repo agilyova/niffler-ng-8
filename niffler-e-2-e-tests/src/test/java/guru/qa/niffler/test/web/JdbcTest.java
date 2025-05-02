@@ -31,6 +31,7 @@ public class JdbcTest {
       null,
       CurrencyValues.EUR,
       null,
+      null,
       null
     );
     uc.createIncomeInvitations(requester, 1);
@@ -46,6 +47,7 @@ public class JdbcTest {
       null,
       null,
       CurrencyValues.EUR,
+      null,
       null,
       null
     );
@@ -63,6 +65,7 @@ public class JdbcTest {
       null,
       CurrencyValues.EUR,
       null,
+      null,
       null
     );
     uc.createFriends(requester, 1);
@@ -78,6 +81,7 @@ public class JdbcTest {
       null,
       null,
       CurrencyValues.EUR,
+      null,
       null,
       null
     );
@@ -101,7 +105,7 @@ public class JdbcTest {
       "Test-spring",
       "friend"
     );
-    spendDbClient.create(spendJson);
+    spendDbClient.createSpend(spendJson);
   }
 
   @Test
@@ -121,7 +125,7 @@ public class JdbcTest {
       RandomDataUtils.randomCategoryName(),
       "friend"
     );
-    SpendJson createdSpend = spendDbClient.create(spendJson);
-    spendDbClient.remove(createdSpend);
+    SpendJson createdSpend = spendDbClient.createSpend(spendJson);
+    spendDbClient.removeSpend(createdSpend);
   }
 }

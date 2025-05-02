@@ -1,10 +1,12 @@
 package guru.qa.niffler.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import guru.qa.niffler.data.entity.userData.UserEntity;
 import guru.qa.niffler.model.enums.CurrencyValues;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public record UserJson(
@@ -23,7 +25,9 @@ public record UserJson(
   @JsonProperty("photo")
   String photo,
   @JsonProperty("photoSmall")
-  String photoSmall
+  String photoSmall,
+  @JsonIgnore
+  TestData testData
 ) {
 
   public static UserJson fromEntity(UserEntity entity) {
@@ -35,7 +39,36 @@ public record UserJson(
       entity.getFullname(),
       entity.getCurrency(),
       entity.getPhoto() != null && entity.getPhoto().length > 0 ? new String(entity.getPhoto(), StandardCharsets.UTF_8) : null,
-      entity.getPhotoSmall() != null && entity.getPhotoSmall().length > 0 ? new String(entity.getPhotoSmall(), StandardCharsets.UTF_8) : null
+      entity.getPhotoSmall() != null && entity.getPhotoSmall().length > 0 ? new String(entity.getPhotoSmall(), StandardCharsets.UTF_8) : null,
+      new TestData(
+        null,
+        new ArrayList<>(),
+        new ArrayList<>()
+      )
+    );
+  }
+
+  public UserJson withTestData(TestData testData) {
+    return new UserJson(
+      id,
+      username,
+      firstname,
+      surname,
+      fullname,
+      currency,
+      photo,
+      photoSmall,
+      testData
+    );
+  }
+
+  public UserJson withPassword(String password) {
+    return withTestData(
+      new TestData(
+        password,
+        testData.categories(),
+        testData.spendings()
+      )
     );
   }
 }

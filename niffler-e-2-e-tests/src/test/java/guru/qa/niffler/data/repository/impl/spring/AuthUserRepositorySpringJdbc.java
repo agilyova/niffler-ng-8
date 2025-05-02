@@ -10,9 +10,9 @@ import guru.qa.niffler.data.entity.userAuth.AuthorityEntity;
 import guru.qa.niffler.data.extractor.AuthUserEntityExtractor;
 import guru.qa.niffler.data.repository.AuthUserRepository;
 import guru.qa.niffler.data.tpl.DataSources;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.sql.PreparedStatement;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,51 +37,55 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
   @Override
   public Optional<AuthUserEntity> findById(UUID id) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
-    return Optional.ofNullable(jdbcTemplate.query(
-      "SELECT u.id, " +
-        "       u.username, " +
-        "       u.password, " +
-        "       u.enabled, " +
-        "       u.account_non_expired, " +
-        "       u.account_non_locked, " +
-        "       u.credentials_non_expired, " +
-        "       a.id as auth_id, " +
-        "       authority " +
-        "FROM \"user\" u join authority a on u.id = a.user_id WHERE u.id = ?",
-      AuthUserEntityExtractor.instance,
-      id));
+    try {
+      return Optional.ofNullable(jdbcTemplate.query(
+        "SELECT u.id, " +
+          "       u.username, " +
+          "       u.password, " +
+          "       u.enabled, " +
+          "       u.account_non_expired, " +
+          "       u.account_non_locked, " +
+          "       u.credentials_non_expired, " +
+          "       a.id as auth_id, " +
+          "       authority " +
+          "FROM \"user\" u join authority a on u.id = a.user_id WHERE u.id = ?",
+        AuthUserEntityExtractor.instance,
+        id));
+    } catch (EmptyResultDataAccessException e) {
+      return Optional.empty();
+    }
   }
 
   @Override
   public Optional<AuthUserEntity> findByUsername(String userName) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
-    return Optional.ofNullable(jdbcTemplate.query(
-      "SELECT u.id, " +
-        "       u.username, " +
-        "       u.password, " +
-        "       u.enabled, " +
-        "       u.account_non_expired, " +
-        "       u.account_non_locked, " +
-        "       u.credentials_non_expired, " +
-        "       a.id as auth_id, " +
-        "       authority " +
-        "FROM \"user\" u join authority a on u.id = a.user_id WHERE u.username = ?",
-      AuthUserEntityExtractor.instance,
-      userName));
+    try {
+      return Optional.ofNullable(jdbcTemplate.query(
+        "SELECT u.id, " +
+          "       u.username, " +
+          "       u.password, " +
+          "       u.enabled, " +
+          "       u.account_non_expired, " +
+          "       u.account_non_locked, " +
+          "       u.credentials_non_expired, " +
+          "       a.id as auth_id, " +
+          "       authority " +
+          "FROM \"user\" u join authority a on u.id = a.user_id WHERE u.username = ?",
+        AuthUserEntityExtractor.instance,
+        userName));
+    } catch (EmptyResultDataAccessException e) {
+      return Optional.empty();
+    }
   }
 
   @Override
   public void remove(AuthUserEntity user) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.authJdbcUrl()));
-    jdbcTemplate.update(con -> {
-      PreparedStatement ps = con.prepareStatement(
-        "WITH deleted_authority AS " +
-          "(DELETE FROM authority WHERE user_id = ?) " +
-          "DELETE FROM \"user\" WHERE id = ?"
-      );
-      ps.setObject(1, user.getId());
-      ps.setObject(2, user.getId());
-      return ps;
-    });
+    jdbcTemplate.update(
+      "WITH deleted_authority AS " +
+        "(DELETE FROM authority WHERE user_id = ?) " +
+        "DELETE FROM \"user\" WHERE id = ?",
+      user.getId(), user.getId()
+    );
   }
 }

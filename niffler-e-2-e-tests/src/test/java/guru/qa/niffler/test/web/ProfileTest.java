@@ -5,7 +5,7 @@ import guru.qa.niffler.api.validation.CategoryApiValidation;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.meta.WebTest;
-import guru.qa.niffler.model.CategoryJson;
+import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.page.ProfilePage;
 import guru.qa.niffler.utils.RandomDataUtils;
@@ -16,75 +16,71 @@ public class ProfileTest {
 
   @Test
   @User(
-    userName = "test",
     categories = @Category()
   )
-  void activeCategoryShouldBeAbleToArchive(CategoryJson category) {
+  void activeCategoryShouldBeAbleToArchive(UserJson user) {
     Selenide.open(LoginPage.URL, LoginPage.class)
-      .doLogin("test", "test");
+      .doLogin(user.username(), user.testData().password());
 
     Selenide.open(ProfilePage.URL, ProfilePage.class)
-      .archiveCategory(category)
+      .archiveCategory(user.testData().categories().getFirst())
       .approveAction()
       .toggleShowArchiveCategories()
-      .checkCategoryIsArchived(category)
-      .checkAllCategoriesListContainsCategory(category);
+      .checkCategoryIsArchived(user.testData().categories().getFirst())
+      .checkAllCategoriesListContainsCategory(user.testData().categories().getFirst());
 
-    CategoryApiValidation.checkCategoryIsArchived(category);
+    CategoryApiValidation.checkCategoryIsArchived(user.testData().categories().getFirst());
   }
 
   @Test
   @User(
-    userName = "test",
     categories = @Category(
       archived = true)
   )
-  void archiveCategoryShouldBeAbleToUnArchive(CategoryJson category) {
+  void archiveCategoryShouldBeAbleToUnArchive(UserJson user) {
     Selenide.open(LoginPage.URL, LoginPage.class)
-      .doLogin("test", "test");
+      .doLogin(user.username(), user.testData().password());
 
     Selenide.open(ProfilePage.URL, ProfilePage.class)
       .toggleShowArchiveCategories()
-      .unArchiveCategory(category)
+      .unArchiveCategory(user.testData().categories().getFirst())
       .approveAction()
-      .checkCategoryIsActive(category)
-      .checkAllCategoriesListContainsCategory(category);
+      .checkCategoryIsActive(user.testData().categories().getFirst())
+      .checkAllCategoriesListContainsCategory(user.testData().categories().getFirst());
 
-    CategoryApiValidation.checkCategoryIsActive(category);
+    CategoryApiValidation.checkCategoryIsActive(user.testData().categories().getFirst());
   }
 
   @Test
   @User(
-    userName = "test",
     categories = @Category()
   )
-  void activeCategoryShouldBeAbleToEdit(CategoryJson category) {
+  void activeCategoryShouldBeAbleToEdit(UserJson user) {
     String newName = RandomDataUtils.randomCategoryName();
 
     Selenide.open(LoginPage.URL, LoginPage.class)
-      .doLogin("test", "test");
+      .doLogin(user.username(), user.testData().password());
 
     Selenide.open(ProfilePage.URL, ProfilePage.class)
-      .editCategory(category)
+      .editCategory(user.testData().categories().getFirst())
       .updateCategoryName(newName)
       .checkActiveCategoryListContainsCategory(newName);
 
-    CategoryApiValidation.checkCurrentName(category, newName);
+    CategoryApiValidation.checkCurrentName(user.testData().categories().getFirst(), newName);
   }
 
   @Test
   @User(
-    userName = "test",
     categories = @Category(
       archived = true
     )
   )
-  void archiveCategoryShouldNotBeAbleToEdit(CategoryJson category) {
+  void archiveCategoryShouldNotBeAbleToEdit(UserJson user) {
     Selenide.open(LoginPage.URL, LoginPage.class)
-      .doLogin("test", "test");
+      .doLogin(user.username(), user.testData().password());
 
     Selenide.open(ProfilePage.URL, ProfilePage.class)
       .toggleShowArchiveCategories()
-      .checkEditCategoryButtonDoesntPresent(category);
+      .checkEditCategoryButtonDoesntPresent(user.testData().categories().getFirst());
   }
 }

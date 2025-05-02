@@ -4,17 +4,21 @@ import guru.qa.niffler.jupiter.annotation.Spend;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
+import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.CategoryDbClient;
+import guru.qa.niffler.service.SpendClient;
 import guru.qa.niffler.service.impl.SpendDbClient;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class SpendExtension implements BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(SpendExtension.class);
-  private final SpendDbClient spendDbClient = new SpendDbClient();
+  private final SpendClient spendClient = new SpendDbClient();
   private final CategoryDbClient categoryDbClient = new CategoryDbClient();
 
   @Override
@@ -23,24 +27,37 @@ public class SpendExtension implements BeforeEachCallback, AfterEachCallback, Pa
       .ifPresent(
         userAnnotation -> {
           if (userAnnotation.spendings().length > 0) {
-            Spend firstSpend = userAnnotation.spendings()[0];
-            SpendJson spendJson = new SpendJson(
-              null,
-              new Date(),
-              new CategoryJson(
-                null,
-                firstSpend.category(),
-                userAnnotation.userName(),
-                false
-              ),
-              firstSpend.currency(),
-              firstSpend.amount(),
-              firstSpend.description(),
-              userAnnotation.userName()
-            );
+            UserJson createdUser = UserExtension.createdUser();
+            final String username = createdUser != null
+              ? createdUser.username()
+              : userAnnotation.userName();
 
-            SpendJson created = spendDbClient.create(spendJson);
-            context.getStore(NAMESPACE).put(context.getUniqueId(), created);
+            final List<SpendJson> createdSpendings = new ArrayList<>();
+            for (Spend spend : userAnnotation.spendings()) {
+              SpendJson spendJson = new SpendJson(
+                null,
+                new Date(),
+                new CategoryJson(
+                  null,
+                  spend.category(),
+                  username,
+                  false
+                ),
+                spend.currency(),
+                spend.amount(),
+                spend.description(),
+                username
+              );
+              createdSpendings.add(
+                spendClient.createSpend(spendJson)
+              );
+            }
+
+            if (createdUser != null) {
+              createdUser.testData().spendings().addAll(createdSpendings);
+            }
+            context.getStore(NAMESPACE).put(context.getUniqueId(), createdSpendings);
+
           }
         }
       );
@@ -48,20 +65,30 @@ public class SpendExtension implements BeforeEachCallback, AfterEachCallback, Pa
 
   @Override
   public void afterEach(ExtensionContext context) {
-    SpendJson spend = context.getStore(NAMESPACE).get(context.getUniqueId(), SpendJson.class);
-    if (spend != null) {
-      spendDbClient.remove(spend);
-      categoryDbClient.deleteCategoryIfSpendsAbsent(spend.category());
+    List<SpendJson> spendings = context.getStore(NAMESPACE).get(context.getUniqueId(), List.class);
+    if (spendings != null && !spendings.isEmpty()) {
+      spendings.forEach(spendClient::removeSpend);
+      spendings.forEach(
+        spendJson -> {
+          if (spendClient.findSpendingsByCategory(spendJson.category()).isEmpty()) {
+            spendClient.removeCategory(spendJson.category());
+          }
+        }
+      );
     }
   }
 
   @Override
   public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-    return parameterContext.getParameter().getType().isAssignableFrom(SpendJson.class);
+    return parameterContext.getParameter().getType().isAssignableFrom(SpendJson[].class);
   }
 
   @Override
-  public SpendJson resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-    return extensionContext.getStore(NAMESPACE).get(extensionContext.getUniqueId(), SpendJson.class);
+  @SuppressWarnings("unchecked")
+  public SpendJson[] resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
+    return (SpendJson[]) extensionContext.getStore(NAMESPACE)
+      .get(extensionContext.getUniqueId(), List.class)
+      .stream()
+      .toArray(SpendJson[]::new);
   }
 }

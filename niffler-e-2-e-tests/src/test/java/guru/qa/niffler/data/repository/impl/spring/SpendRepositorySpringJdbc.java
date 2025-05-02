@@ -3,13 +3,10 @@ package guru.qa.niffler.data.repository.impl.spring;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.CategoryDao;
 import guru.qa.niffler.data.dao.SpendDao;
-import guru.qa.niffler.data.dao.impl.jdbc.CategoryDaoJdbc;
-import guru.qa.niffler.data.dao.impl.jdbc.SpendDaoJdbc;
 import guru.qa.niffler.data.dao.impl.spring.CategoryDaoSpringJdbc;
 import guru.qa.niffler.data.dao.impl.spring.SpendDaoSpringJdbc;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
-import guru.qa.niffler.data.mapper.SpendEntityRowMapper;
 import guru.qa.niffler.data.mapper.SpendWithCategoryEntityRowMapper;
 import guru.qa.niffler.data.repository.SpendRepository;
 import guru.qa.niffler.data.tpl.DataSources;
@@ -18,6 +15,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,7 +27,7 @@ public class SpendRepositorySpringJdbc implements SpendRepository {
   SpendDao spendDao = new SpendDaoSpringJdbc();
 
   @Override
-  public SpendEntity create(SpendEntity spend) {
+  public SpendEntity createSpend(SpendEntity spend) {
     CategoryEntity category = spend.getCategory();
 
     if (category.getId() == null) {
@@ -46,7 +44,7 @@ public class SpendRepositorySpringJdbc implements SpendRepository {
   }
 
   @Override
-  public SpendEntity update(SpendEntity spend) {
+  public SpendEntity updateSpend(SpendEntity spend) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.spendJdbcUrl()));
     jdbcTemplate.update(con -> {
         PreparedStatement ps = con.prepareStatement(
@@ -88,7 +86,7 @@ public class SpendRepositorySpringJdbc implements SpendRepository {
   }
 
   @Override
-  public Optional<SpendEntity> findById(UUID id) {
+  public Optional<SpendEntity> findSpendById(UUID id) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.spendJdbcUrl()));
 
     try {
@@ -112,7 +110,12 @@ public class SpendRepositorySpringJdbc implements SpendRepository {
   }
 
   @Override
-  public Optional<SpendEntity> findByUsernameAndSpendDescription(String username, String description) {
+  public List<SpendEntity> findSpendingsByCategory(CategoryEntity category) {
+    return spendDao.findByCategory(category);
+  }
+
+  @Override
+  public Optional<SpendEntity> findSpendByUsernameAndSpendDescription(String username, String description) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.spendJdbcUrl()));
 
     try {
@@ -143,16 +146,11 @@ public class SpendRepositorySpringJdbc implements SpendRepository {
   @Override
   public void removeCategory(CategoryEntity category) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.spendJdbcUrl()));
-    jdbcTemplate.update(con -> {
-        PreparedStatement ps = con.prepareStatement(
-          "WITH deleted_spend AS (" +
-            "DELETE FROM spend WHERE category_id = ?)" +
-            "DELETE FROM category WHERE id = ?"
-        );
-        ps.setObject(1, category.getId());
-        ps.setObject(2, category.getId());
-        return ps;
-      }
+    jdbcTemplate.update(
+      "WITH deleted_spend AS (" +
+        "DELETE FROM spend WHERE category_id = ?)" +
+        "DELETE FROM category WHERE id = ?",
+      category.getId(), category.getId()
     );
   }
 }

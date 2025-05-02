@@ -63,12 +63,17 @@ public class UserdataUserDAOSpringJdbc implements UserdataUserDAO {
   @Override
   public Optional<UserEntity> findByUsername(String username) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
-    return Optional.ofNullable(
-      jdbcTemplate.queryForObject(
-        "SELECT * FROM \"user\" WHERE username = ?",
-        UserDataUserEntityRowMapper.instance,
-        username
-      ));
+
+    try {
+      return Optional.ofNullable(
+        jdbcTemplate.queryForObject(
+          "SELECT * FROM \"user\" WHERE username = ?",
+          UserDataUserEntityRowMapper.instance,
+          username
+        ));
+    } catch (EmptyResultDataAccessException e) {
+      return Optional.empty();
+    }
   }
 
   @Override
