@@ -9,6 +9,7 @@ import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.model.enums.CurrencyValues;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.page.MainPage;
+import guru.qa.niffler.utils.RandomDataUtils;
 import org.junit.jupiter.api.Test;
 
 @WebTest
@@ -17,6 +18,7 @@ public class SpendingTest {
   private static final Config CFG = Config.getInstance();
 
   @User(
+    userName = "test",
     spendings = @Spend(
       category = "Учеба",
       description = "Обучение Niffler NG",
@@ -26,11 +28,10 @@ public class SpendingTest {
   )
   @Test
   void spendingDescriptionShouldBeUpdatedByTableAction(UserJson user) {
-    //System.out.println(user);
-    final String newDescription = "Обучение Niffler NG";
+    final String newDescription = RandomDataUtils.randomString(12);
 
     Selenide.open(CFG.frontUrl(), LoginPage.class)
-      .doLogin(user.username(), user.testData().password())
+      .doLogin(user.username(), "test")
       .editSpending(user.testData().spendings().getFirst().description())
       .editDescription(newDescription);
 

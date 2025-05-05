@@ -6,11 +6,9 @@ import guru.qa.niffler.data.entity.userAuth.Authority;
 import guru.qa.niffler.data.entity.userAuth.AuthorityEntity;
 import guru.qa.niffler.data.entity.userData.UserEntity;
 import guru.qa.niffler.data.repository.AuthUserRepository;
-import guru.qa.niffler.data.repository.SpendRepository;
 import guru.qa.niffler.data.repository.UserdataUserRepository;
-import guru.qa.niffler.data.repository.impl.hibernate.SpendRepositoryHibernate;
-import guru.qa.niffler.data.repository.impl.jdbc.AuthUserRepositoryJdbc;
-import guru.qa.niffler.data.repository.impl.jdbc.UserdataUserRepositoryJdbc;
+import guru.qa.niffler.data.repository.impl.hibernate.AuthUserRepositoryHibernate;
+import guru.qa.niffler.data.repository.impl.hibernate.UserdataUserRepositoryHibernate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.model.enums.CurrencyValues;
@@ -30,15 +28,14 @@ public class UsersDbClient implements UsersClient {
   private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
   public static final String DEFAULT_PASSWORD = "12345";
 
-//  private final AuthUserRepository authUserRepo = new AuthUserRepositoryHibernate();
-//  private final UserdataUserRepository userdataUserRepo = new UserdataUserRepositoryHibernate();
+  private final AuthUserRepository authUserRepo = new AuthUserRepositoryHibernate();
+  private final UserdataUserRepository userdataUserRepo = new UserdataUserRepositoryHibernate();
 
 //  private final AuthUserRepository authUserRepo = new AuthUserRepositorySpringJdbc();
 //  private final UserdataUserRepository userdataUserRepo = new UserdataRepositorySpringJdbc();
 
-  private final AuthUserRepository authUserRepo = new AuthUserRepositoryJdbc();
-  private final UserdataUserRepository userdataUserRepo = new UserdataUserRepositoryJdbc();
-  private final SpendRepository spendRepository = new SpendRepositoryHibernate();
+//  private final AuthUserRepository authUserRepo = new AuthUserRepositoryJdbc();
+//  private final UserdataUserRepository userdataUserRepo = new UserdataUserRepositoryJdbc();
 
   private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(
     CFG.authJdbcUrl(),
@@ -71,6 +68,7 @@ public class UsersDbClient implements UsersClient {
             authUserRepo.create(authUser);
             UserEntity addressee = userdataUserRepo.create(userEntity(username));
             userdataUserRepo.addInvitation(addressee, targetEntity);
+          targetUser.testData().incomeRequests().add(UserJson.fromEntity(addressee));
             return null;
           }
         );
@@ -90,6 +88,7 @@ public class UsersDbClient implements UsersClient {
             authUserRepo.create(authUser);
             UserEntity addressee = userdataUserRepo.create(userEntity(username));
             userdataUserRepo.addInvitation(targetEntity, addressee);
+          targetUser.testData().outcomeRequests().add(UserJson.fromEntity(addressee));
             return null;
           }
         );
@@ -109,11 +108,21 @@ public class UsersDbClient implements UsersClient {
             authUserRepo.create(authUser);
             UserEntity addressee = userdataUserRepo.create(userEntity(username));
             userdataUserRepo.addFriend(targetEntity, addressee);
+          targetUser.testData().friends().add(UserJson.fromEntity(addressee));
             return null;
           }
         );
       }
     }
+  }
+
+  @Override
+  public UserJson findUserByUsername(String userName) {
+    UserEntity userEntity = userdataUserRepo.findByUsername(userName)
+      .orElseThrow(
+        () -> new IllegalArgumentException("User " + userName + " doesnt exist")
+      );
+    return UserJson.fromEntity(userEntity);
   }
 
   //Todo так же удалять и spending, и categories

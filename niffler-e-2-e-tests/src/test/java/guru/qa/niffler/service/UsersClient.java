@@ -12,5 +12,7 @@ public interface UsersClient {
 
   void createFriends(UserJson targetUser, int count);
 
+  UserJson findUserByUsername(String userName);
+
   void remove(UserJson user);
 }

@@ -43,6 +43,9 @@ public record UserJson(
       new TestData(
         null,
         new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>(),
         new ArrayList<>()
       )
     );
@@ -67,7 +70,10 @@ public record UserJson(
       new TestData(
         password,
         testData.categories(),
-        testData.spendings()
+        testData.spendings(),
+        testData.incomeRequests(),
+        testData.outcomeRequests(),
+        testData.friends()
       )
     );
   }

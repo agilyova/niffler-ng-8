@@ -15,6 +15,7 @@ public class AllPeoplePage {
   private final SelenideElement peopleTab = $("div[aria-label = 'People tabs']");
   private final SelenideElement spinnerElement = $(".MuiCircularProgress-root");
   private final SelenideElement allPeopleTable = $("#all");
+  private final SelenideElement searchInputElement = $("input[aria-label='search']");
   private final ElementsCollection personRows = allPeopleTable.$$("tr");
 
   public AllPeoplePage() {
@@ -28,6 +29,8 @@ public class AllPeoplePage {
   }
 
   private SelenideElement findPerson(String userName) {
+    searchInputElement.setValue(userName).pressEnter();
+    spinnerElement.should(disappear);
     return personRows.find(text(userName));
   }
 }
