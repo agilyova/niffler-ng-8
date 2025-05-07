@@ -15,6 +15,7 @@ public class AllPeoplePage {
   private final SelenideElement peopleTab = $("div[aria-label = 'People tabs']");
   private final SelenideElement spinnerElement = $(".MuiCircularProgress-root");
   private final SelenideElement allPeopleTable = $("#all");
+  private final SelenideElement searchInputElement = $("input[aria-label='search']");
   private final ElementsCollection personRows = allPeopleTable.$$("tr");
 
   public AllPeoplePage() {
@@ -22,12 +23,18 @@ public class AllPeoplePage {
     spinnerElement.should(disappear);
   }
 
+  public AllPeoplePage searchForPerson(String username) {
+    searchInputElement.setValue(username).pressEnter();
+    spinnerElement.should(disappear);
+    return this;
+  }
+
   public AllPeoplePage checkOutComeInvitationPresentInAllPeopleTable(String userName) {
     findPerson(userName).$(byText("Waiting...")).shouldBe(visible);
     return this;
   }
 
-  private SelenideElement findPerson(String userName) {
-    return personRows.find(text(userName));
+  private SelenideElement findPerson(String username) {
+    return personRows.find(text(username));
   }
 }

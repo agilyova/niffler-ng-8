@@ -5,7 +5,6 @@ import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
-import guru.qa.niffler.service.CategoryDbClient;
 import guru.qa.niffler.service.SpendClient;
 import guru.qa.niffler.service.impl.SpendDbClient;
 import org.junit.jupiter.api.extension.*;
@@ -19,7 +18,7 @@ public class SpendExtension implements BeforeEachCallback, AfterEachCallback, Pa
 
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(SpendExtension.class);
   private final SpendClient spendClient = new SpendDbClient();
-  private final CategoryDbClient categoryDbClient = new CategoryDbClient();
+//  private final SpendClient spendClient = new SpendApiClient();
 
   @Override
   public void beforeEach(ExtensionContext context) {

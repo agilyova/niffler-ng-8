@@ -17,6 +17,12 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface User {
   String userName() default "";
 
+  int amountOfIncomeInvitations() default 0;
+
+  int amountOfOutcomeInvitations() default 0;
+
+  int amountOfFriends() default 0;
+
   Category[] categories() default {};
 
   Spend[] spendings() default {};
