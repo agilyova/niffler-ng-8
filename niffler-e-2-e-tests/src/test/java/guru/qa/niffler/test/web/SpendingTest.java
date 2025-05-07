@@ -35,6 +35,8 @@ public class SpendingTest {
       .editSpending(user.testData().spendings().getFirst().description())
       .editDescription(newDescription);
 
-    new MainPage().checkThatTableContains(newDescription);
+    new MainPage().
+      searchForSpending(newDescription).
+      checkThatTableContains(newDescription);
   }
 }

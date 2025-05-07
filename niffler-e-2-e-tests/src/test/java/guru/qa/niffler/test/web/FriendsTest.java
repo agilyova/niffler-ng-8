@@ -45,6 +45,7 @@ public class FriendsTest {
       .doLogin(user.username(), user.testData().password());
 
     Selenide.open(AllPeoplePage.URL, AllPeoplePage.class)
+      .searchForPerson(user.testData().outcomeRequests().getFirst().username())
       .checkOutComeInvitationPresentInAllPeopleTable(user.testData().outcomeRequests().getFirst().username());
   }
 

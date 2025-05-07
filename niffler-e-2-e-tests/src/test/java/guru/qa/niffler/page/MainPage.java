@@ -29,9 +29,13 @@ public class MainPage {
     return new EditSpendingPage();
   }
 
-  public void checkThatTableContains(String spendingDescription) {
-    searchInputElement.setValue(spendingDescription).pressEnter();
+  public MainPage searchForSpending(String description) {
+    searchInputElement.setValue(description).pressEnter();
     spinnerElement.should(disappear);
+    return this;
+  }
+
+  public void checkThatTableContains(String spendingDescription) {
     tableRows.find(text(spendingDescription))
         .should(visible);
   }

@@ -23,14 +23,18 @@ public class AllPeoplePage {
     spinnerElement.should(disappear);
   }
 
+  public AllPeoplePage searchForPerson(String username) {
+    searchInputElement.setValue(username).pressEnter();
+    spinnerElement.should(disappear);
+    return this;
+  }
+
   public AllPeoplePage checkOutComeInvitationPresentInAllPeopleTable(String userName) {
     findPerson(userName).$(byText("Waiting...")).shouldBe(visible);
     return this;
   }
 
-  private SelenideElement findPerson(String userName) {
-    searchInputElement.setValue(userName).pressEnter();
-    spinnerElement.should(disappear);
-    return personRows.find(text(userName));
+  private SelenideElement findPerson(String username) {
+    return personRows.find(text(username));
   }
 }
