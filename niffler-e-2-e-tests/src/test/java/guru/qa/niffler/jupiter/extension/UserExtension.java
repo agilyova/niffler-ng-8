@@ -17,7 +17,7 @@ public class UserExtension implements BeforeEachCallback, AfterEachCallback, Par
 
   private final UsersClient usersClient = new UsersDbClient();
 
-  private ThreadLocal<Boolean> userAlreadyExist = ThreadLocal.withInitial(() -> Boolean.FALSE);
+  private ThreadLocal<Boolean> userAlreadyExist = new ThreadLocal<>();
 
   @Override
   public void beforeEach(ExtensionContext context) {
@@ -26,6 +26,7 @@ public class UserExtension implements BeforeEachCallback, AfterEachCallback, Par
         userAnnotation -> {
           UserJson user;
           if ("".equals(userAnnotation.userName())) {
+            userAlreadyExist.set(false);
             user = usersClient.createUser(
               RandomDataUtils.randomUserName(),
               DEFAULT_PASSWORD
@@ -52,7 +53,7 @@ public class UserExtension implements BeforeEachCallback, AfterEachCallback, Par
   public void afterEach(ExtensionContext context) throws Exception {
     UserJson user = context.getStore(NAMESPACE).get(context.getUniqueId(), UserJson.class);
 
-    if (!userAlreadyExist.get() && user != null) {
+    if (userAlreadyExist != null && !userAlreadyExist.get() && user != null) {
       usersClient.remove(user);
     }
   }
