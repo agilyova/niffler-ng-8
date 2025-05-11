@@ -66,14 +66,17 @@ public class SpendExtension implements BeforeEachCallback, AfterEachCallback, Pa
   public void afterEach(ExtensionContext context) {
     List<SpendJson> spendings = context.getStore(NAMESPACE).get(context.getUniqueId(), List.class);
     if (spendings != null && !spendings.isEmpty()) {
-      spendings.forEach(spendClient::removeSpend);
-      spendings.forEach(
-        spendJson -> {
-          if (spendClient.findSpendingsByCategory(spendJson.category()).isEmpty()) {
-            spendClient.removeCategory(spendJson.category());
+      try {
+        spendings.forEach(spendClient::removeSpend);
+        spendings.forEach(
+          spendJson -> {
+            if (spendClient.findSpendingsByCategory(spendJson.category()).isEmpty()) {
+              spendClient.removeCategory(spendJson.category());
+            }
           }
-        }
-      );
+        );
+      } catch (Exception e) {
+      }
     }
   }
 

@@ -3,13 +3,17 @@ package guru.qa.niffler.test.web;
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.api.validation.CategoryApiValidation;
 import guru.qa.niffler.jupiter.annotation.Category;
+import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.meta.WebTest;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.page.ProfilePage;
 import guru.qa.niffler.utils.RandomDataUtils;
+import io.qameta.allure.Flaky;
 import org.junit.jupiter.api.Test;
+
+import java.awt.image.BufferedImage;
 
 @WebTest
 public class ProfileTest {
@@ -32,6 +36,7 @@ public class ProfileTest {
     CategoryApiValidation.checkCategoryIsArchived(user.testData().categories().getFirst());
   }
 
+  @Flaky
   @Test
   @User(
     categories = @Category(
@@ -82,5 +87,19 @@ public class ProfileTest {
     Selenide.open(ProfilePage.URL, ProfilePage.class)
       .toggleShowArchiveCategories()
       .checkEditCategoryButtonDoesntPresent(user.testData().categories().getFirst());
+  }
+
+  @ScreenShotTest(
+    "img/expected_avatar.png"
+  )
+  @User
+  void profileImageShouldBeAbleToUploaded(UserJson user, BufferedImage expected) {
+    Selenide.open(LoginPage.URL, LoginPage.class)
+      .doLogin(user.username(), user.testData().password())
+      .goToProfilePage()
+      .addProfileImage("img/avatar.png")
+      .saveChanges()
+      .refreshPage()
+      .checkProfileImage(expected);
   }
 }

@@ -13,7 +13,6 @@ import java.io.ByteArrayInputStream;
 
 public class BrowserExtension implements BeforeEachCallback, AfterEachCallback, TestExecutionExceptionHandler, LifecycleMethodExecutionExceptionHandler {
 
-
   @Override
   public void beforeEach(ExtensionContext context) throws Exception {
     SelenideLogger.addListener("Allure-selenide", new AllureSelenide()
