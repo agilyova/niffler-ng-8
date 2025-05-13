@@ -2,11 +2,19 @@ package guru.qa.niffler.page;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.CategoryJson;
+import guru.qa.niffler.utils.ScreenDiffResult;
+import lombok.SneakyThrows;
+import org.junit.jupiter.api.Assertions;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 
 import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 
 
@@ -22,6 +30,11 @@ public class ProfilePage {
   private final SelenideElement spinnerElement = categoriesContainer.$(".MuiCircularProgress-root");
   private final SelenideElement editCategoryNameInput = $("input[placeholder = 'Edit category']");
   private final SelenideElement submitActionBtn = $(".MuiDialogActions-root>button:last-of-type");
+  private final SelenideElement confirmDialog = $("div[role = 'dialog']");
+  private final SelenideElement uploadImageInput = $("#image__input");
+  private final SelenideElement saveButton = $(byText("Save changes"));
+  private final SelenideElement profileImageElement = $("form .MuiAvatar-img");
+  private final SelenideElement headerImageElement = $("header .MuiAvatar-img");
 
 
   public ProfilePage() {
@@ -38,6 +51,7 @@ public class ProfilePage {
     findCategory(categoryJson.name())
       .$(ARCHIVE_BUTTON_LOCATOR)
       .click();
+    confirmDialog.should(appear);
     return this;
   }
 
@@ -45,6 +59,7 @@ public class ProfilePage {
     findCategory(categoryJson.name())
       .$(UNARCHIVE_BUTTON_LOCATOR)
       .click();
+    confirmDialog.should(appear);
     return this;
   }
 
@@ -64,6 +79,22 @@ public class ProfilePage {
   public ProfilePage approveAction() {
     submitActionBtn.click();
     spinnerElement.should(disappear);
+    return this;
+  }
+
+  public ProfilePage addProfileImage(String path) {
+    uploadImageInput.uploadFromClasspath(path);
+    return this;
+  }
+
+  public ProfilePage saveChanges() {
+    saveButton.click();
+    saveButton.shouldBe(enabled);
+    return this;
+  }
+
+  public ProfilePage refreshPage() {
+    Selenide.refresh();
     return this;
   }
 
@@ -88,7 +119,6 @@ public class ProfilePage {
     return this;
   }
 
-
   public ProfilePage checkActiveCategoryListContainsCategory(String categoryName) {
     findCategory(categoryName).should(exist);
     return this;
@@ -98,6 +128,20 @@ public class ProfilePage {
     findCategory(categoryJson.name())
       .$(EDIT_BUTTON_LOCATOR)
       .shouldNot(exist);
+    return this;
+  }
+
+  @SneakyThrows
+  public ProfilePage checkProfileImage(BufferedImage expected) {
+    Selenide.sleep(3000);
+    BufferedImage actual = ImageIO.read(profileImageElement.screenshot());
+
+    Assertions.assertFalse(
+      new ScreenDiffResult(
+        expected,
+        actual
+      )
+    );
     return this;
   }
 

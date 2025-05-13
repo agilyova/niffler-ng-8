@@ -2,6 +2,7 @@ package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.jupiter.annotation.Spend;
 import guru.qa.niffler.jupiter.annotation.User;
@@ -11,15 +12,11 @@ import guru.qa.niffler.model.enums.CurrencyValues;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.page.MainPage;
 import guru.qa.niffler.utils.RandomDataUtils;
-import guru.qa.niffler.utils.ScreenDiffResult;
-import org.junit.jupiter.api.Assertions;
+import io.qameta.allure.Flaky;
 import org.junit.jupiter.api.Test;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-
-import static com.codeborne.selenide.Selenide.$;
 
 @WebTest
 public class SpendingTest {
@@ -50,24 +47,130 @@ public class SpendingTest {
   }
 
   @User(
+    spendings = {
+      @Spend(
+        category = "Обучение",
+        description = "QA GURU Advanced",
+        amount = 5000.00,
+        currency = CurrencyValues.RUB
+      ),
+      @Spend(
+        category = "Обучение",
+        description = "Фигурное катание",
+        amount = 2000.50,
+        currency = CurrencyValues.RUB
+      ),
+      @Spend(
+        category = "Подписки",
+        description = "Yandex +",
+        amount = 3250.00,
+        currency = CurrencyValues.RUB
+      )
+    }
+  )
+  @ScreenShotTest("img/expected_diagram_grouping_by_category.png")
+  void diagramComponentShouldGroupSpendingsByCategory(UserJson user, BufferedImage expected) throws IOException {
+    Selenide.open(CFG.frontUrl(), LoginPage.class)
+      .doLogin(user.username(), user.testData().password())
+      .checkDiagram(expected)
+      .checkBadges("Обучение 7000.5 ₽", "Подписки 3250 ₽");
+  }
+
+
+  @User(
+    categories = {
+      @Category(name = "Обучение", archived = true),
+      @Category(name = "Подписки", archived = true)
+    },
+    spendings = {
+      @Spend(
+        category = "Обучение",
+        description = "QA GURU Advanced",
+        amount = 5000.00,
+        currency = CurrencyValues.RUB
+      ),
+      @Spend(
+        category = "Подписки",
+        description = "Yandex +",
+        amount = 3250.00,
+        currency = CurrencyValues.RUB
+      ),
+      @Spend(
+        category = "Спорт",
+        description = "Фигурное катание",
+        amount = 2000.50,
+        currency = CurrencyValues.RUB
+      ),
+    }
+  )
+  @ScreenShotTest("img/expected_diagram_grouping_by_archive_category.png")
+  void diagramComponentShouldGroupSpendingsByArchiveCategory(UserJson user, BufferedImage expected) throws IOException {
+    Selenide.open(CFG.frontUrl(), LoginPage.class)
+      .doLogin(user.username(), user.testData().password())
+      .checkDiagram(expected)
+      .checkBadges("Спорт 2000.5 ₽", "Archived 8250 ₽");
+  }
+
+  @User(
     spendings = @Spend(
       category = "Учеба",
       description = "Обучение Niffler NG",
-      amount = 89000.00,
+      amount = 10000.00,
       currency = CurrencyValues.RUB
     )
   )
-  @ScreenShotTest("img/expected_stat.png")
-  void statComponentShouldBePresent(UserJson user, BufferedImage expected) throws IOException {
+  @ScreenShotTest("img/expected_diagram_after_edit.png")
+  void diagramComponentShouldUpdatedAfterEditSpending(UserJson user, BufferedImage expected) {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
-      .doLogin(user.username(), user.testData().password());
+      .doLogin(user.username(), user.testData().password())
+      .editSpending(user.testData().spendings().getFirst().description())
+      .editAmount(7550.00)
+      .checkDiagram(expected)
+      .checkBadges("Учеба 7550 ₽");
+  }
 
-    BufferedImage actual = ImageIO.read($("canvas[role = 'img']").screenshot());
-    Assertions.assertFalse(
-      new ScreenDiffResult(
-        expected,
-        actual
+  @User(
+    spendings =
+    @Spend(
+      category = "Subscription",
+      description = "Inteleji IDEA",
+      amount = 1500.00,
+      currency = CurrencyValues.RUB
+    )
+  )
+  @Flaky
+  @ScreenShotTest("img/expected_diagram_empty.png")
+  void diagramComponentShouldUpdatedAfterDeleteSpending(UserJson user, BufferedImage expected) {
+    Selenide.open(CFG.frontUrl(), LoginPage.class)
+      .doLogin(user.username(), user.testData().password())
+      .deleteSpending("Inteleji IDEA")
+      .approveAction()
+      .checkDiagram(expected);
+  }
+
+  @User(
+    spendings = {
+      @Spend(
+        category = "Учеба",
+        description = "Обучение Niffler NG",
+        amount = 10000.00,
+        currency = CurrencyValues.RUB
+      ),
+      @Spend(
+        category = "Subscription",
+        description = "IntelliJ IDEA",
+        amount = 150.00,
+        currency = CurrencyValues.EUR
       )
-    );
+    }
+  )
+  @Flaky
+  @ScreenShotTest("img/currency_filter_expected.png")
+  void diagramComponentShouldUpdatedAfterFilterByCurrency(UserJson user, BufferedImage expected) {
+    Selenide.open(CFG.frontUrl(), LoginPage.class)
+      .doLogin(user.username(), user.testData().password())
+      .selectCurrency(CurrencyValues.EUR)
+      .checkDiagram(expected)
+      .checkBadges("Subscription 150 €");
   }
 }

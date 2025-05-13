@@ -12,6 +12,7 @@ import org.springframework.core.io.ClassPathResource;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
 
@@ -40,17 +41,29 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
 
   @Override
   public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
-    ScreenDiff screenDiff = new ScreenDiff(
-      "data:image/png;base64," + Base64.getEncoder().encodeToString(imageToBytes(getExpected())),
-      "data:image/png;base64," + Base64.getEncoder().encodeToString(imageToBytes(getActual())),
-      "data:image/png;base64," + Base64.getEncoder().encodeToString(imageToBytes(getDiff()))
-    );
-    Allure.addAttachment(
-      "ScreenShot diff",
-      "application/vnd.allure.image.diff",
-      objectMapper.writeValueAsString(screenDiff)
-    );
+    if (getExpected() != null && getActual() != null && getDiff() != null) {
 
+      ScreenShotTest annotation = context.getRequiredTestMethod().getAnnotation(ScreenShotTest.class);
+      if (annotation.rewriteExpected()) {
+        try {
+          ImageIO.write(getActual(), "png", new File("src/test/resources/" + annotation.value()));
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+      }
+
+      ScreenDiff screenDiff = new ScreenDiff(
+        "data:image/png;base64," + Base64.getEncoder().encodeToString(imageToBytes(getExpected())),
+        "data:image/png;base64," + Base64.getEncoder().encodeToString(imageToBytes(getActual())),
+        "data:image/png;base64," + Base64.getEncoder().encodeToString(imageToBytes(getDiff()))
+      );
+      Allure.addAttachment(
+        "ScreenShot diff",
+        "application/vnd.allure.image.diff",
+        objectMapper.writeValueAsString(screenDiff)
+      );
+
+    }
     throw throwable;
   }
 
