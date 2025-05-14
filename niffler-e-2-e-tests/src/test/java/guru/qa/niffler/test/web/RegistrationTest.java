@@ -1,9 +1,9 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
-import guru.qa.niffler.jupiter.annotation.RandomUser;
+import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
-import guru.qa.niffler.model.UserJ;
+import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.RegisterPage;
 import guru.qa.niffler.utils.RandomDataUtils;
 import org.junit.jupiter.api.Test;
@@ -13,63 +13,51 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public class RegistrationTest {
 
   @Test
-  @RandomUser
-  void shouldRegisterNewUser(UserJ user) {
+  void shouldRegisterNewUser() {
+    String username = RandomDataUtils.randomUserName();
+    String password = RandomDataUtils.randomPassword(3, 12);
 
     Selenide.open(RegisterPage.URL, RegisterPage.class)
-      .fillRegistrationForm(user.getUsername(), user.getPassword(), user.getPassword())
+      .fillRegistrationForm(username, password, password)
       .submitRegistration()
       .checkSuccessRegisterMessageShown()
       .goToLoginPage()
-      .doLogin(user.getUsername(), user.getPassword())
+      .doLogin(username, password)
       .checkThatSpendingTableIsEmpty();
   }
 
   @Test
-  @RandomUser
-  void shouldNotRegisterUserWithExistingUserName(UserJ user) {
+  @User
+  void shouldNotRegisterUserWithExistingUserName(UserJson user) {
 
     Selenide.open(RegisterPage.URL, RegisterPage.class)
-      .registerUser(user)
-      .checkSuccessRegisterMessageShown()
-      .openRegisterPage()
-      .registerUser(user)
-      .checkErrorRegisterMessageShown("Username `%s` already exists".formatted(user.getUsername()));
+      .registerUser(user.username(), user.testData().password())
+      .checkErrorRegisterMessageShown("Username `%s` already exists".formatted(user.username()));
   }
 
   @Test
-  @RandomUser
-  void shouldShowErrorIfPasswordAndConfirmPasswordAreNotEqual(UserJ user) {
-
+  void shouldShowErrorIfPasswordAndConfirmPasswordAreNotEqual() {
     Selenide.open(RegisterPage.URL, RegisterPage.class)
       .fillRegistrationForm(
-        user.getUsername(),
-        user.getPassword(),
+        RandomDataUtils.randomUserName(),
+        RandomDataUtils.randomPassword(3, 12),
         RandomDataUtils.randomPassword(3, 12))
       .submitRegistration()
       .checkErrorRegisterMessageShown("Passwords should be equal");
   }
 
   @Test
-  @RandomUser
-  void shouldShowErrorIfUserNameLessThenThreeCharacters(UserJ user) {
-
-    user.setUsername(RandomDataUtils.randomString(2));
-
+  void shouldShowErrorIfUserNameLessThenThreeCharacters() {
     Selenide.open(RegisterPage.URL, RegisterPage.class)
-      .registerUser(user)
+      .registerUser(RandomDataUtils.randomString(2), RandomDataUtils.randomPassword(3, 12))
       .submitRegistration()
       .checkErrorRegisterMessageShown("Allowed username length should be from 3 to 50 characters");
   }
 
   @Test
-  @RandomUser
-  void shouldShowErrorIfPasswordLessThenThreeCharacters(UserJ user) {
-
-    user.setPassword(RandomDataUtils.randomPassword(1, 2));
-
+  void shouldShowErrorIfPasswordLessThenThreeCharacters() {
     Selenide.open(RegisterPage.URL, RegisterPage.class)
-      .registerUser(user)
+      .registerUser(RandomDataUtils.randomUserName(), RandomDataUtils.randomPassword(2, 3))
       .submitRegistration()
       .checkErrorRegisterMessageShown("Allowed password length should be from 3 to 12 characters");
   }

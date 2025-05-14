@@ -37,8 +37,8 @@ public class RegisterPage {
     return new LoginPage();
   }
 
-  public RegisterPage registerUser(UserJ user) {
-    fillRegistrationForm(user.getUsername(), user.getPassword(), user.getPassword())
+  public RegisterPage registerUser(String username, String password) {
+    fillRegistrationForm(username, password, password)
       .submitRegistration();
     return this;
   }

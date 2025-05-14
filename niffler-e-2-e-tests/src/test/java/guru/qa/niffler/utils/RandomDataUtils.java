@@ -14,7 +14,7 @@ public class RandomDataUtils {
   }
 
   public static String randomPassword(int minLength, int maxLength) {
-    return faker.internet().password(minLength,maxLength);
+    return faker.internet().password(minLength, maxLength);
   }
 
   public static String randomCategoryName() {

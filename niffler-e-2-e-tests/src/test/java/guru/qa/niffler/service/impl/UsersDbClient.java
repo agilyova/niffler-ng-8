@@ -14,6 +14,7 @@ import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.model.enums.CurrencyValues;
 import guru.qa.niffler.service.UsersClient;
 import guru.qa.niffler.utils.RandomDataUtils;
+import io.qameta.allure.Step;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,6 +44,7 @@ public class UsersDbClient implements UsersClient {
   );
 
   @Override
+  @Step("Create user with SQL")
   public UserJson createUser(String username, String password) {
     return xaTransactionTemplate.execute(() -> {
         AuthUserEntity authUser = authUserEntity(username, password);
@@ -56,6 +58,7 @@ public class UsersDbClient implements UsersClient {
   }
 
   @Override
+  @Step("Create income invitation with SQL")
   //Приглашения от addressee targetUse-У
   public void createIncomeInvitations(UserJson targetUser, int count) {
     if (count > 0) {
