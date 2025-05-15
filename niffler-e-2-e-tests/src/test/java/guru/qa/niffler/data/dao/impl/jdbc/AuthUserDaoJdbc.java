@@ -50,7 +50,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
 
   @Override
   public AuthUserEntity update(AuthUserEntity entity) {
-    try (PreparedStatement ps =  holder(CFG.authJdbcUrl()).connection().prepareStatement(
+    try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
       "UPDATE \"user\" SET " +
         "username = ?," +
         "password = ?," +
@@ -136,6 +136,6 @@ public class AuthUserDaoJdbc implements AuthUserDao {
     result.setAccountNonExpired(rs.getBoolean("account_non_expired"));
     result.setAccountNonLocked(rs.getBoolean("account_non_locked"));
     result.setCredentialsNonExpired(rs.getBoolean("credentials_non_expired"));
-    return  result;
+    return result;
   }
 }

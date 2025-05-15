@@ -11,9 +11,9 @@ public interface AuthUserApi {
   @FormUrlEncoded
   @POST("register")
   Call<Void> registerUser(@Header("Cookie") String cookie,
-    @Field("username") String username,
-    @Field("password") String password,
-    @Field("passwordSubmit") String passwordSubmit,
-    @Field("_csrf") String csrf
+                          @Field("username") String username,
+                          @Field("password") String password,
+                          @Field("passwordSubmit") String passwordSubmit,
+                          @Field("_csrf") String csrf
   );
 }

@@ -31,6 +31,7 @@ public class LoginPage {
     submitBtn.click();
     return returnPage;
   }
+
   public LoginPage checkErrorMessageShown(String message) {
     errorMessageElement.shouldHave(exactText(message));
     return this;

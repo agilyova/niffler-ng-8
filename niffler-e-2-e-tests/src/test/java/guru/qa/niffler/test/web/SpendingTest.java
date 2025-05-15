@@ -1,6 +1,7 @@
 package guru.qa.niffler.test.web;
 
 import com.codeborne.selenide.Selenide;
+import guru.qa.niffler.condition.Color;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
@@ -108,7 +109,8 @@ public class SpendingTest {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
       .doLogin(user.username(), user.testData().password())
       .checkDiagram(expected)
-      .checkBadges("Спорт 2000.5 ₽", "Archived 8250 ₽");
+      .checkBadges("Спорт 2000.5 ₽", "Archived 8250 ₽")
+      .checkBubbles(Color.yellow, Color.green);
   }
 
   @User(
@@ -126,7 +128,8 @@ public class SpendingTest {
       .editSpending(user.testData().spendings().getFirst().description())
       .editAmount(7550.00)
       .checkDiagram(expected)
-      .checkBadges("Учеба 7550 ₽");
+      .checkBadges("Учеба 7550 ₽")
+      .checkBubble(Color.yellow);
   }
 
   @User(

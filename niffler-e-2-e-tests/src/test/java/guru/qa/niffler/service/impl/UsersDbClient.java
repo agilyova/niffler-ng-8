@@ -71,7 +71,7 @@ public class UsersDbClient implements UsersClient {
             authUserRepo.create(authUser);
             UserEntity addressee = userdataUserRepo.create(userEntity(username));
             userdataUserRepo.addInvitation(addressee, targetEntity);
-          targetUser.testData().incomeRequests().add(UserJson.fromEntity(addressee));
+            targetUser.testData().incomeRequests().add(UserJson.fromEntity(addressee));
             return null;
           }
         );
@@ -91,7 +91,7 @@ public class UsersDbClient implements UsersClient {
             authUserRepo.create(authUser);
             UserEntity addressee = userdataUserRepo.create(userEntity(username));
             userdataUserRepo.addInvitation(targetEntity, addressee);
-          targetUser.testData().outcomeRequests().add(UserJson.fromEntity(addressee));
+            targetUser.testData().outcomeRequests().add(UserJson.fromEntity(addressee));
             return null;
           }
         );
@@ -111,7 +111,7 @@ public class UsersDbClient implements UsersClient {
             authUserRepo.create(authUser);
             UserEntity addressee = userdataUserRepo.create(userEntity(username));
             userdataUserRepo.addFriend(targetEntity, addressee);
-          targetUser.testData().friends().add(UserJson.fromEntity(addressee));
+            targetUser.testData().friends().add(UserJson.fromEntity(addressee));
             return null;
           }
         );

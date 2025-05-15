@@ -4,7 +4,6 @@ import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.model.UserJ;
 
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Selenide.$;
@@ -27,6 +26,7 @@ public class RegisterPage {
     passwordSubmitInput.setValue(confirmPassword);
     return this;
   }
+
   public RegisterPage submitRegistration() {
     submitBtn.click();
     return this;

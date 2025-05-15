@@ -4,7 +4,10 @@ import com.github.vertical_blank.sqlformatter.SqlFormatter;
 import com.github.vertical_blank.sqlformatter.languages.Dialect;
 import com.p6spy.engine.logging.Category;
 import com.p6spy.engine.spy.appender.StdoutLogger;
-import io.qameta.allure.attachment.*;
+import io.qameta.allure.attachment.AttachmentData;
+import io.qameta.allure.attachment.AttachmentProcessor;
+import io.qameta.allure.attachment.DefaultAttachmentProcessor;
+import io.qameta.allure.attachment.FreemarkerAttachmentRenderer;
 import org.apache.commons.lang3.StringUtils;
 
 public class AllureAppender extends StdoutLogger {

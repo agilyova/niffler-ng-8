@@ -37,7 +37,7 @@ public class SpendDbClient implements SpendClient {
           existingCategoryOpt.ifPresent(spendEntity::setCategory);
         }
 
-      return SpendJson.fromEntity(spendRepository.createSpend(spendEntity));
+        return SpendJson.fromEntity(spendRepository.createSpend(spendEntity));
       }
     );
   }

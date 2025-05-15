@@ -3,6 +3,7 @@ package guru.qa.niffler.page;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.condition.Color;
 import guru.qa.niffler.model.enums.CurrencyValues;
 import guru.qa.niffler.utils.ScreenDiffResult;
 import lombok.SneakyThrows;
@@ -17,6 +18,8 @@ import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
+import static guru.qa.niffler.condition.StatConditions.color;
+import static guru.qa.niffler.condition.StatConditions.colors;
 
 public class MainPage {
 
@@ -107,6 +110,16 @@ public class MainPage {
 
   public MainPage checkBadges(String... badgesTexts) {
     badges.shouldHave(textsInAnyOrder(badgesTexts));
+    return this;
+  }
+
+  public MainPage checkBubble(Color expectedColor) {
+    badges.first().shouldHave(color(expectedColor));
+    return this;
+  }
+
+  public MainPage checkBubbles(Color... expectedColor) {
+    badges.shouldHave(colors(expectedColor));
     return this;
   }
 }
