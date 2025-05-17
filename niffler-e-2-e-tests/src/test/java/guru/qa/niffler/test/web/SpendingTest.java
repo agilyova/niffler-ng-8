@@ -8,6 +8,8 @@ import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.jupiter.annotation.Spend;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.meta.WebTest;
+import guru.qa.niffler.model.Bubble;
+import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.model.enums.CurrencyValues;
 import guru.qa.niffler.page.LoginPage;
@@ -70,11 +72,14 @@ public class SpendingTest {
     }
   )
   @ScreenShotTest("img/expected_diagram_grouping_by_category.png")
-  void diagramComponentShouldGroupSpendingsByCategory(UserJson user, BufferedImage expected) throws IOException {
+  void diagramComponentShouldGroupSpendingsByCategory(UserJson user, BufferedImage expected) {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
       .doLogin(user.username(), user.testData().password())
       .checkDiagram(expected)
-      .checkBadges("Обучение 7000.5 ₽", "Подписки 3250 ₽");
+      .checkExactBubbles(
+        new Bubble(Color.yellow, "Обучение 7000.5 ₽"),
+        new Bubble(Color.green, "Подписки 3250 ₽")
+      );
   }
 
 
@@ -109,8 +114,9 @@ public class SpendingTest {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
       .doLogin(user.username(), user.testData().password())
       .checkDiagram(expected)
-      .checkBadges("Спорт 2000.5 ₽", "Archived 8250 ₽")
-      .checkBubbles(Color.yellow, Color.green);
+      .checkExactBubbles(
+        new Bubble(Color.yellow, "Спорт 2000.5 ₽"),
+        new Bubble(Color.green, "Archived 8250 ₽"));
   }
 
   @User(
@@ -128,8 +134,7 @@ public class SpendingTest {
       .editSpending(user.testData().spendings().getFirst().description())
       .editAmount(7550.00)
       .checkDiagram(expected)
-      .checkBadges("Учеба 7550 ₽")
-      .checkBubble(Color.yellow);
+      .checkExactBubbles(new Bubble(Color.yellow, "Учеба 7550 ₽"));
   }
 
   @User(
@@ -174,6 +179,35 @@ public class SpendingTest {
       .doLogin(user.username(), user.testData().password())
       .selectCurrency(CurrencyValues.EUR)
       .checkDiagram(expected)
-      .checkBadges("Subscription 150 €");
+      .checkExactBubbles(new Bubble(Color.yellow, "Subscription 150 €"));
+  }
+
+  @User(
+    spendings = {
+      @Spend(
+        category = "Subscription",
+        description = "Inteleji IDEA",
+        amount = 150.00,
+        currency = CurrencyValues.EUR
+      ),
+      @Spend(
+        category = "Theater",
+        description = "The Demon of Onegin",
+        amount = 6000.50,
+        currency = CurrencyValues.RUB
+      ),
+      @Spend(
+        category = "Sport",
+        description = "RG",
+        amount = 5000.54,
+        currency = CurrencyValues.RUB
+      )
+    }
+  )
+  @Test()
+  void tableShouldContainSpending(UserJson user) {
+    Selenide.open(CFG.frontUrl(), LoginPage.class)
+      .doLogin(user.username(), user.testData().password())
+      .checkTableHaveExactSpends(user.testData().spendings().toArray(SpendJson[]::new));
   }
 }
