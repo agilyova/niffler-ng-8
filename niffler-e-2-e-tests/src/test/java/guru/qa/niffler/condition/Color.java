@@ -16,4 +16,10 @@ public enum Color {
 
   public final String rgb;
 
+  public static Color fromRgba(String rgba) {
+    for (Color color : values()) {
+      if (rgba.equalsIgnoreCase(color.rgb)) return color;
+    }
+    throw new IllegalArgumentException("No enum constant with rgba " + rgba);
+  }
 }

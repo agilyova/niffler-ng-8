@@ -3,7 +3,9 @@ package guru.qa.niffler.page;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
-import guru.qa.niffler.condition.Color;
+import guru.qa.niffler.condition.SpendsConditions;
+import guru.qa.niffler.model.Bubble;
+import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.enums.CurrencyValues;
 import guru.qa.niffler.utils.ScreenDiffResult;
 import lombok.SneakyThrows;
@@ -13,19 +15,17 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 
 import static com.codeborne.selenide.CollectionCondition.size;
-import static com.codeborne.selenide.CollectionCondition.textsInAnyOrder;
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
-import static guru.qa.niffler.condition.StatConditions.color;
-import static guru.qa.niffler.condition.StatConditions.colors;
+import static guru.qa.niffler.condition.StatConditions.*;
 
 public class MainPage {
 
-  private final ElementsCollection tableRows = $$("#spendings tbody tr");
   private final SelenideElement noSpendingTitle = $(byText("There are no spendings"));
   private final SelenideElement spendingTable = $("#spendings");
+  private final ElementsCollection tableRows = spendingTable.$$("table>tbody tr");
   private final SelenideElement searchInputElement = $("input[aria-label='search']");
   private final SelenideElement spinnerElement = $(".MuiCircularProgress-root");
   private final SelenideElement currencyFilter = $("#currency");
@@ -94,6 +94,10 @@ public class MainPage {
     return this;
   }
 
+  public void checkTableHaveExactSpends(SpendJson... spendings) {
+    tableRows.shouldHave(SpendsConditions.spends(spendings));
+  }
+
   @SneakyThrows
   public MainPage checkDiagram(BufferedImage expected) {
     Selenide.sleep(3000);
@@ -108,18 +112,19 @@ public class MainPage {
     return this;
   }
 
-  public MainPage checkBadges(String... badgesTexts) {
-    badges.shouldHave(textsInAnyOrder(badgesTexts));
+  public MainPage checkExactBubbles(Bubble... expectedBubbles) {
+    badges.shouldHave(statBubbles(expectedBubbles));
     return this;
   }
 
-  public MainPage checkBubble(Color expectedColor) {
-    badges.first().shouldHave(color(expectedColor));
+  public MainPage checkBubblesInAnyOrder(Bubble... expectedBubbles) {
+    badges.shouldHave(statBubblesInAnyOrder(expectedBubbles));
     return this;
   }
 
-  public MainPage checkBubbles(Color... expectedColor) {
-    badges.shouldHave(colors(expectedColor));
+  public MainPage checkContainsBubbles(Bubble... expectedBubbles) {
+    badges.shouldHave(statBubblesContains(expectedBubbles));
     return this;
   }
+
 }
