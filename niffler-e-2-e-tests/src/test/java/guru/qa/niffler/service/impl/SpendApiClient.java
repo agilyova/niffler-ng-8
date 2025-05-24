@@ -5,6 +5,8 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.service.SpendClient;
+import io.qameta.allure.Step;
+import io.qameta.allure.okhttp3.AllureOkHttp3;
 import okhttp3.OkHttpClient;
 import org.apache.hc.core5.http.HttpStatus;
 import retrofit2.Response;
@@ -21,7 +23,13 @@ public class SpendApiClient implements SpendClient {
 
   private static final Config CFG = Config.getInstance();
 
-  private final OkHttpClient client = new OkHttpClient.Builder().build();
+  private final OkHttpClient client = new OkHttpClient.Builder()
+    .addNetworkInterceptor(
+      new AllureOkHttp3()
+        .setRequestTemplate("http-request.ftl")
+        .setResponseTemplate("http-response.ftl")
+    )
+    .build();
   private final Retrofit retrofit = new Retrofit.Builder()
     .baseUrl(CFG.spendUrl())
     .client(client)
@@ -32,6 +40,7 @@ public class SpendApiClient implements SpendClient {
 
 
   @Override
+  @Step("Create spend with API")
   public SpendJson createSpend(SpendJson spend) {
     final Response<SpendJson> response;
     try {
@@ -45,6 +54,7 @@ public class SpendApiClient implements SpendClient {
   }
 
   @Override
+  @Step("Create category with API")
   public CategoryJson createCategory(CategoryJson category) {
     final Response<CategoryJson> response;
     try {
@@ -57,6 +67,7 @@ public class SpendApiClient implements SpendClient {
   }
 
   @Override
+  @Step("Find spend by category with API")
   public List<SpendJson> findSpendingsByCategory(CategoryJson category) {
     final Response<List<SpendJson>> response;
     try {
@@ -69,6 +80,7 @@ public class SpendApiClient implements SpendClient {
   }
 
   @Override
+  @Step("Remove spend with API")
   public void removeSpend(SpendJson spend) {
     Response response;
     try {
@@ -80,6 +92,7 @@ public class SpendApiClient implements SpendClient {
   }
 
   @Override
+  @Step("Remove category with API")
   public void removeCategory(CategoryJson category) {
     throw new UnsupportedOperationException("Method not implemented yet");
   }

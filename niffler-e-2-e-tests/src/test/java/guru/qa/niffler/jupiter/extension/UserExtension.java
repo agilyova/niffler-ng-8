@@ -35,10 +35,15 @@ public class UserExtension implements BeforeEachCallback, AfterEachCallback, Par
             user = usersClient.findUserByUsername(userAnnotation.userName());
             userAlreadyExist.set(true);
           }
-
-          usersClient.createIncomeInvitations(user, userAnnotation.amountOfIncomeInvitations());
-          usersClient.createOutcomeInvitations(user, userAnnotation.amountOfOutcomeInvitations());
-          usersClient.createFriends(user, userAnnotation.amountOfFriends());
+          if (userAnnotation.amountOfFriends() > 0) {
+            usersClient.createFriends(user, userAnnotation.amountOfFriends());
+          }
+          if (userAnnotation.amountOfOutcomeInvitations() > 0) {
+            usersClient.createOutcomeInvitations(user, userAnnotation.amountOfOutcomeInvitations());
+          }
+          if (userAnnotation.amountOfIncomeInvitations() > 0) {
+            usersClient.createIncomeInvitations(user, userAnnotation.amountOfIncomeInvitations());
+          }
 
           context.getStore(NAMESPACE).put(
             context.getUniqueId(),
