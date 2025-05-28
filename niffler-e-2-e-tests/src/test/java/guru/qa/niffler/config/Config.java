@@ -3,7 +3,10 @@ package guru.qa.niffler.config;
 public interface Config {
 
   static Config getInstance() {
-    return LocalConfig.instance;
+
+    return "docker".equals(System.getProperty("test.env"))
+      ? DockerConfig.INSTANCE
+      : LocalConfig.INSTANCE;
   }
 
   String frontUrl();

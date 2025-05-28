@@ -8,7 +8,7 @@ import java.util.List;
 
 public class CategoryApiValidation {
   private static boolean getCurrentArchiveStatusOfCategory(CategoryJson categoryJson) {
-    List<CategoryJson> categoryList = new SpendApiClient().getCategories(categoryJson.username());
+    List<CategoryJson> categoryList = new SpendApiClient().getAllCategories(categoryJson.username());
     return categoryList.stream()
       .filter(category -> category.name().equals(categoryJson.name()))
       .map(CategoryJson::archived)
@@ -17,7 +17,7 @@ public class CategoryApiValidation {
   }
 
   private static String getCurrentNameOfCategory(CategoryJson categoryJson) {
-    List<CategoryJson> categoryList = new SpendApiClient().getCategories(categoryJson.username());
+    List<CategoryJson> categoryList = new SpendApiClient().getAllCategories(categoryJson.username());
     return categoryList.stream()
       .filter(category -> category.id().equals(categoryJson.id()))
       .map(CategoryJson::name)
