@@ -9,6 +9,7 @@ import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.service.SpendClient;
+import io.qameta.allure.Step;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +26,7 @@ public class SpendDbClient implements SpendClient {
     CFG.spendJdbcUrl()
   );
 
+  @Step("Create spend \"{0.description}\" with DB")
   public SpendJson createSpend(SpendJson spend) {
     return xaTransactionTemplate.execute(() -> {
         SpendEntity spendEntity = SpendEntity.fromJson(spend);
@@ -42,6 +44,7 @@ public class SpendDbClient implements SpendClient {
     );
   }
 
+  @Step("Create category \"{0.name}\" with DB")
   @Override
   public CategoryJson createCategory(CategoryJson category) {
     return xaTransactionTemplate.execute(
@@ -52,12 +55,14 @@ public class SpendDbClient implements SpendClient {
     );
   }
 
+  @Step("Find spendings by category \"{0.name}\" with DB")
   @Override
   public List<SpendJson> findSpendingsByCategory(CategoryJson categoryJson) {
     List<SpendEntity> spendEntities = spendRepository.findSpendingsByCategory(CategoryEntity.fromJson(categoryJson));
     return spendEntities.stream().map(SpendJson::fromEntity).toList();
   }
 
+  @Step("Delete spending \"{0.description}\" with DB")
   public void removeSpend(SpendJson spend) {
     xaTransactionTemplate.execute(() -> {
         if (spend.id() == null) {
@@ -69,6 +74,7 @@ public class SpendDbClient implements SpendClient {
     );
   }
 
+  @Step("Delete category \"{0.description}\"   with DB")
   public void removeCategory(CategoryJson category) {
     xaTransactionTemplate.execute(() -> {
         if (category.id() == null) {

@@ -10,6 +10,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.jspecify.annotations.Nullable;
 import org.openqa.selenium.WebElement;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.stream.Collector;
@@ -20,6 +21,7 @@ import static com.codeborne.selenide.CheckResult.rejected;
 import static guru.qa.niffler.condition.Color.fromRgba;
 import static java.lang.System.lineSeparator;
 
+@ParametersAreNonnullByDefault
 public class StatConditions {
 
   public static WebElementCondition color(Color expectedColor) {

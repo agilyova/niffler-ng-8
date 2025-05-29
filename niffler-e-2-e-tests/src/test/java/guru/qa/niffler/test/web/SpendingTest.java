@@ -20,11 +20,34 @@ import org.junit.jupiter.api.Test;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 @WebTest
 public class SpendingTest {
 
   private static final Config CFG = Config.getInstance();
+
+  @User
+  @Test
+  void userShouldBeAbleToAddNewSpending(UserJson user) {
+    SpendJson spend = RandomDataUtils.randomSpending();
+
+    Selenide.open(CFG.frontUrl(), LoginPage.class)
+      .doLogin(user.username(), user.testData().password())
+      .getHeader()
+      .goToAddSpendingPage()
+      .getSpendingForm()
+      .setAmount(spend.amount())
+      .selectCurrency(spend.currency())
+      .createCategory(spend.category().name())
+      .selectDate(spend.spendDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
+      .setDescription(spend.description())
+      .getParentPage()
+      .submitSpendingCreation()
+      .getSpendingTable()
+      .checkTableHaveExactSpends(spend);
+  }
 
   @User(
     userName = "test",
@@ -41,12 +64,15 @@ public class SpendingTest {
 
     Selenide.open(CFG.frontUrl(), LoginPage.class)
       .doLogin(user.username(), "test")
+      .getSpendingTable()
       .editSpending(user.testData().spendings().getFirst().description())
-      .editDescription(newDescription);
-
-    new MainPage().
-      searchForSpending(newDescription).
-      checkThatTableContains(newDescription);
+      .getSpendingForm()
+      .setDescription(newDescription)
+      .getParentPage()
+      .saveChanges()
+      .getSpendingTable()
+      .searchForSpending(newDescription)
+      .checkThatTableContains(newDescription);
   }
 
   @User(
@@ -75,6 +101,7 @@ public class SpendingTest {
   void diagramComponentShouldGroupSpendingsByCategory(UserJson user, BufferedImage expected) {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
       .doLogin(user.username(), user.testData().password())
+      .getStatComponent()
       .checkDiagram(expected)
       .checkExactBubbles(
         new Bubble(Color.yellow, "Обучение 7000.5 ₽"),
@@ -113,6 +140,7 @@ public class SpendingTest {
   void diagramComponentShouldGroupSpendingsByArchiveCategory(UserJson user, BufferedImage expected) throws IOException {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
       .doLogin(user.username(), user.testData().password())
+      .getStatComponent()
       .checkDiagram(expected)
       .checkExactBubbles(
         new Bubble(Color.yellow, "Спорт 2000.5 ₽"),
@@ -131,8 +159,13 @@ public class SpendingTest {
   void diagramComponentShouldUpdatedAfterEditSpending(UserJson user, BufferedImage expected) {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
       .doLogin(user.username(), user.testData().password())
+      .getSpendingTable()
       .editSpending(user.testData().spendings().getFirst().description())
-      .editAmount(7550.00)
+      .getSpendingForm()
+      .setAmount(7550.00)
+      .getParentPage()
+      .saveChanges()
+      .getStatComponent()
       .checkDiagram(expected)
       .checkExactBubbles(new Bubble(Color.yellow, "Учеба 7550 ₽"));
   }
@@ -151,8 +184,10 @@ public class SpendingTest {
   void diagramComponentShouldUpdatedAfterDeleteSpending(UserJson user, BufferedImage expected) {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
       .doLogin(user.username(), user.testData().password())
+      .getSpendingTable()
       .deleteSpending("Inteleji IDEA")
       .approveAction()
+      .getStatComponent()
       .checkDiagram(expected);
   }
 
@@ -177,7 +212,11 @@ public class SpendingTest {
   void diagramComponentShouldUpdatedAfterFilterByCurrency(UserJson user, BufferedImage expected) {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
       .doLogin(user.username(), user.testData().password())
-      .selectCurrency(CurrencyValues.EUR)
+      .getSpendingTable()
+      .selectCurrency(CurrencyValues.EUR);
+
+    new MainPage()
+      .getStatComponent()
       .checkDiagram(expected)
       .checkExactBubbles(new Bubble(Color.yellow, "Subscription 150 €"));
   }
@@ -208,6 +247,7 @@ public class SpendingTest {
   void tableShouldContainSpending(UserJson user) {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
       .doLogin(user.username(), user.testData().password())
+      .getSpendingTable()
       .checkTableHaveExactSpends(user.testData().spendings().toArray(SpendJson[]::new));
   }
 }

@@ -59,7 +59,11 @@ public class UserExtension implements BeforeEachCallback, AfterEachCallback, Par
     UserJson user = context.getStore(NAMESPACE).get(context.getUniqueId(), UserJson.class);
 
     if (userAlreadyExist != null && !userAlreadyExist.get() && user != null) {
-      usersClient.remove(user);
+      try {
+        usersClient.remove(user);
+      } catch (Exception e) {
+
+      }
     }
   }
 

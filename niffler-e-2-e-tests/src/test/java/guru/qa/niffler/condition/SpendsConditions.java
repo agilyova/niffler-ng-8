@@ -10,6 +10,7 @@ import org.jspecify.annotations.Nullable;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -19,6 +20,7 @@ import static com.codeborne.selenide.CheckResult.accepted;
 import static com.codeborne.selenide.CheckResult.rejected;
 import static java.lang.System.lineSeparator;
 
+@ParametersAreNonnullByDefault
 public class SpendsConditions {
   public static WebElementsCondition spends(SpendJson... expectedSpends) {
     return new WebElementsCondition() {
@@ -87,7 +89,7 @@ public class SpendsConditions {
   private static Map<String, String> mapExpected(SpendJson expectedSpend) {
     Map<String, String> expected = new HashMap<>();
     DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.ENGLISH));
-    SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.ENGLISH);
+    SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.ENGLISH);
 
     expected.put("category", expectedSpend.category().name());
     expected.put("amount", String.format("%s %s", df.format(expectedSpend.amount()), expectedSpend.currency().alias));

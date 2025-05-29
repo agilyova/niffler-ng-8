@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import javax.annotation.Nonnull;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
@@ -20,6 +21,7 @@ public class UserdataUserDAOSpringJdbc implements UserdataUserDAO {
 
   private static final Config CFG = Config.getInstance();
 
+  @Nonnull
   @Override
   public UserEntity create(UserEntity user) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
@@ -45,6 +47,7 @@ public class UserdataUserDAOSpringJdbc implements UserdataUserDAO {
     return user;
   }
 
+  @Nonnull
   @Override
   public Optional<UserEntity> findById(UUID id) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
@@ -60,6 +63,7 @@ public class UserdataUserDAOSpringJdbc implements UserdataUserDAO {
     }
   }
 
+  @Nonnull
   @Override
   public Optional<UserEntity> findByUsername(String username) {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));
@@ -76,6 +80,7 @@ public class UserdataUserDAOSpringJdbc implements UserdataUserDAO {
     }
   }
 
+  @Nonnull
   @Override
   public List<UserEntity> findAll() {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.dataSource(CFG.userdataJdbcUrl()));

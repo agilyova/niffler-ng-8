@@ -44,7 +44,7 @@ public class UsersDbClient implements UsersClient {
   );
 
   @Override
-  @Step("Create user with SQL")
+  @Step("Create user {0} / {1} with DB")
   public UserJson createUser(String username, String password) {
     return xaTransactionTemplate.execute(() -> {
         AuthUserEntity authUser = authUserEntity(username, password);
@@ -58,7 +58,7 @@ public class UsersDbClient implements UsersClient {
   }
 
   @Override
-  @Step("Create income invitation with SQL")
+  @Step("Create {1} income invitation for user {0.username} with DB")
   //Приглашения от addressee targetUse-У
   public void createIncomeInvitations(UserJson targetUser, int count) {
     if (count > 0) {
@@ -80,6 +80,7 @@ public class UsersDbClient implements UsersClient {
   }
 
   @Override
+  @Step("Create {1} outcome invitation from user {0.username} with DB")
   public void createOutcomeInvitations(UserJson targetUser, int count) {
     if (count > 0) {
       UserEntity targetEntity = findUserEntity(targetUser);
@@ -100,6 +101,7 @@ public class UsersDbClient implements UsersClient {
   }
 
   @Override
+  @Step("Create {1} friends for user {0.username} with DB")
   public void createFriends(UserJson targetUser, int count) {
     if (count > 0) {
       UserEntity targetEntity = findUserEntity(targetUser);
@@ -120,6 +122,7 @@ public class UsersDbClient implements UsersClient {
   }
 
   @Override
+  @Step("Find user by username \"{0}\" with DB")
   public UserJson findUserByUsername(String userName) {
     UserEntity userEntity = userdataUserRepo.findByUsername(userName)
       .orElseThrow(
@@ -130,6 +133,7 @@ public class UsersDbClient implements UsersClient {
 
   //Todo так же удалять и spending, и categories
   @Override
+  @Step("Delete user \"{0.username}\" with DB")
   public void remove(UserJson user) {
     xaTransactionTemplate.execute(() -> {
         Optional<AuthUserEntity> authUserOpt = authUserRepo.findByUsername(user.username());

@@ -6,6 +6,8 @@ import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
 import guru.qa.niffler.model.enums.CurrencyValues;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +16,12 @@ import java.util.UUID;
 
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
+@ParametersAreNonnullByDefault
 public class SpendDaoJdbc implements SpendDao {
 
   private static final Config CFG = Config.getInstance();
 
+  @Nonnull
   @Override
   public SpendEntity create(SpendEntity spend) {
     try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
@@ -49,6 +53,7 @@ public class SpendDaoJdbc implements SpendDao {
     }
   }
 
+  @Nonnull
   public Optional<SpendEntity> findById(UUID id) {
     try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
       "SELECT * FROM spend WHERE id = ?"
@@ -69,6 +74,7 @@ public class SpendDaoJdbc implements SpendDao {
     }
   }
 
+  @Nonnull
   @Override
   public List<SpendEntity> findAllByUsername(String username) {
     try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
@@ -90,6 +96,7 @@ public class SpendDaoJdbc implements SpendDao {
     }
   }
 
+  @Nonnull
   @Override
   public List<SpendEntity> findByCategory(CategoryEntity category) {
     try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
@@ -111,6 +118,7 @@ public class SpendDaoJdbc implements SpendDao {
     }
   }
 
+  @Nonnull
   @Override
   public List<SpendEntity> findAll() {
     try (PreparedStatement ps = holder(CFG.spendJdbcUrl()).connection().prepareStatement(
