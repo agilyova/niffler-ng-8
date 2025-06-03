@@ -4,6 +4,8 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthUserDao;
 import guru.qa.niffler.data.entity.userAuth.AuthUserEntity;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,9 +17,11 @@ import java.util.UUID;
 
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
+@ParametersAreNonnullByDefault
 public class AuthUserDaoJdbc implements AuthUserDao {
   private static final Config CFG = Config.getInstance();
 
+  @Nonnull
   @Override
   public AuthUserEntity create(AuthUserEntity entity) {
     try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
@@ -48,6 +52,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
     }
   }
 
+  @Nonnull
   @Override
   public AuthUserEntity update(AuthUserEntity entity) {
     try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
@@ -74,6 +79,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
     return entity;
   }
 
+  @Nonnull
   @Override
   public Optional<AuthUserEntity> findById(UUID id) {
     try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
@@ -95,6 +101,7 @@ public class AuthUserDaoJdbc implements AuthUserDao {
     }
   }
 
+  @Nonnull
   @Override
   public List<AuthUserEntity> findAll() {
     try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(

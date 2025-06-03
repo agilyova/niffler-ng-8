@@ -23,13 +23,13 @@ public class RegistrationTest {
       .checkSuccessRegisterMessageShown()
       .goToLoginPage()
       .doLogin(username, password)
+      .getSpendingTable()
       .checkThatSpendingTableIsEmpty();
   }
 
   @Test
   @User
   void shouldNotRegisterUserWithExistingUserName(UserJson user) {
-
     Selenide.open(RegisterPage.URL, RegisterPage.class)
       .registerUser(user.username(), user.testData().password())
       .checkErrorRegisterMessageShown("Username `%s` already exists".formatted(user.username()));

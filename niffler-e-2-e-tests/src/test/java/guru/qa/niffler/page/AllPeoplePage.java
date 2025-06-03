@@ -3,6 +3,7 @@ package guru.qa.niffler.page;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.config.Config;
+import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byText;
@@ -23,13 +24,15 @@ public class AllPeoplePage {
     spinnerElement.should(disappear);
   }
 
+  @Step("Search person by string {0}")
   public AllPeoplePage searchForPerson(String username) {
     searchInputElement.setValue(username).pressEnter();
     spinnerElement.should(disappear);
     return this;
   }
 
-  public AllPeoplePage checkOutComeInvitationPresentInAllPeopleTable(String userName) {
+  @Step("Check that outcome invitation to {0} is present in All people table")
+  public AllPeoplePage checkOutcomeInvitationPresentInAllPeopleTable(String userName) {
     findPerson(userName).$(byText("Waiting...")).shouldBe(visible);
     return this;
   }

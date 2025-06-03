@@ -8,7 +8,6 @@ import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.meta.WebTest;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.LoginPage;
-import guru.qa.niffler.page.ProfilePage;
 import guru.qa.niffler.utils.RandomDataUtils;
 import io.qameta.allure.Flaky;
 import org.junit.jupiter.api.Test;
@@ -24,9 +23,9 @@ public class ProfileTest {
   )
   void activeCategoryShouldBeAbleToArchive(UserJson user) {
     Selenide.open(LoginPage.URL, LoginPage.class)
-      .doLogin(user.username(), user.testData().password());
-
-    Selenide.open(ProfilePage.URL, ProfilePage.class)
+      .doLogin(user.username(), user.testData().password())
+      .getHeader()
+      .goToProfilePage()
       .archiveCategory(user.testData().categories().getFirst())
       .approveAction()
       .toggleShowArchiveCategories()
@@ -44,9 +43,9 @@ public class ProfileTest {
   )
   void archiveCategoryShouldBeAbleToUnArchive(UserJson user) {
     Selenide.open(LoginPage.URL, LoginPage.class)
-      .doLogin(user.username(), user.testData().password());
-
-    Selenide.open(ProfilePage.URL, ProfilePage.class)
+      .doLogin(user.username(), user.testData().password())
+      .getHeader()
+      .goToProfilePage()
       .toggleShowArchiveCategories()
       .unArchiveCategory(user.testData().categories().getFirst())
       .approveAction()
@@ -64,9 +63,9 @@ public class ProfileTest {
     String newName = RandomDataUtils.randomCategoryName();
 
     Selenide.open(LoginPage.URL, LoginPage.class)
-      .doLogin(user.username(), user.testData().password());
-
-    Selenide.open(ProfilePage.URL, ProfilePage.class)
+      .doLogin(user.username(), user.testData().password())
+      .getHeader()
+      .goToProfilePage()
       .editCategory(user.testData().categories().getFirst())
       .updateCategoryName(newName)
       .checkActiveCategoryListContainsCategory(newName);
@@ -82,9 +81,9 @@ public class ProfileTest {
   )
   void archiveCategoryShouldNotBeAbleToEdit(UserJson user) {
     Selenide.open(LoginPage.URL, LoginPage.class)
-      .doLogin(user.username(), user.testData().password());
-
-    Selenide.open(ProfilePage.URL, ProfilePage.class)
+      .doLogin(user.username(), user.testData().password())
+      .getHeader()
+      .goToProfilePage()
       .toggleShowArchiveCategories()
       .checkEditCategoryButtonDoesntPresent(user.testData().categories().getFirst());
   }
@@ -96,10 +95,26 @@ public class ProfileTest {
   void profileImageShouldBeAbleToUploaded(UserJson user, BufferedImage expected) {
     Selenide.open(LoginPage.URL, LoginPage.class)
       .doLogin(user.username(), user.testData().password())
+      .getHeader()
       .goToProfilePage()
       .addProfileImage("img/avatar.png")
       .saveChanges()
       .refreshPage()
       .checkProfileImage(expected);
+  }
+
+  @Test
+  @User
+  void profileDataShouldBeAbleToEdit(UserJson user) {
+    String name = RandomDataUtils.randomName();
+
+    Selenide.open(LoginPage.URL, LoginPage.class)
+      .doLogin(user.username(), user.testData().password())
+      .getHeader()
+      .goToProfilePage()
+      .updateProfileName(name)
+      .saveChanges()
+      .refreshPage()
+      .checkProfileName(name);
   }
 }

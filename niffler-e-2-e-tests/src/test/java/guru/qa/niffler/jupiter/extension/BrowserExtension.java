@@ -4,6 +4,7 @@ import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.WebDriverRunner;
 import com.codeborne.selenide.logevents.SelenideLogger;
 import io.qameta.allure.Allure;
+import io.qameta.allure.Step;
 import io.qameta.allure.selenide.AllureSelenide;
 import org.junit.jupiter.api.extension.*;
 import org.openqa.selenium.OutputType;
@@ -20,6 +21,7 @@ public class BrowserExtension implements BeforeEachCallback, AfterEachCallback, 
       .screenshots(false));
   }
 
+  @Step("Close webdriver")
   @Override
   public void afterEach(ExtensionContext context) throws Exception {
     if (WebDriverRunner.hasWebDriverStarted()) {
