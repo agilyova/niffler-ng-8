@@ -9,13 +9,16 @@ import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
-public class Header {
-  private final SelenideElement self = $("#root header");
+public class Header extends BaseComponent<Header> {
 
   private final SelenideElement logo = self.$("a[href = '/main']");
   private final SelenideElement spendingButton = self.$("a[href = '/spending']");
   private final SelenideElement menuButton = self.$("button[aria-label= 'Menu']");
   private final ElementsCollection menuItems = $$("li[role = 'menuitem']");
+
+  public Header() {
+    super($("#root header"));
+  }
 
   @Step("Click on logo in Header")
   public MainPage goToMainPage() {

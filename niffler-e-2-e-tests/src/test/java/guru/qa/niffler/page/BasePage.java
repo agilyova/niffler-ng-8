@@ -1,4 +1,15 @@
 package guru.qa.niffler.page;
 
-public class BasePage {
+import com.codeborne.selenide.SelenideElement;
+
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Selenide.$;
+
+public abstract class BasePage<T extends BasePage> {
+  private final SelenideElement alert = $(".MuiAlert-message");
+
+  public T checkAlertMessage(String message) {
+    alert.shouldHave(text(message));
+    return (T) this;
+  }
 }

@@ -2,6 +2,7 @@ package guru.qa.niffler.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.service.RestClient;
 import okhttp3.OkHttpClient;
 import org.apache.hc.core5.http.HttpStatus;
 import retrofit2.Response;
@@ -15,23 +16,22 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ParametersAreNonnullByDefault
-public class GhApiClient {
-  private static final Config CFG = Config.getInstance();
+public class GhApiClient extends RestClient {
 
-  private final OkHttpClient client = new OkHttpClient.Builder().build();
-  private final Retrofit retrofit = new Retrofit.Builder()
-    .baseUrl(CFG.ghUrl())
-    .client(client)
-    .addConverterFactory(JacksonConverterFactory.create())
-    .build();
+  public static final String GITHUB_TOKEN = "GITHUB_TOKEN";
 
-  private final GhApi ghdApi = retrofit.create(GhApi.class);
+  private final GhApi ghdApi;
+
+  public GhApiClient() {
+    super(CFG.ghUrl());
+    this.ghdApi = retrofit.create(GhApi.class);
+  }
 
   public String issueState(String issueNumber) {
     Response<JsonNode> response;
     try {
       response = ghdApi.issue(
-        "Bearer" + System.getenv("GITHUB_TOKEN"),
+        "Bearer" + System.getenv(GITHUB_TOKEN),
         issueNumber
       ).execute();
     } catch (IOException e) {

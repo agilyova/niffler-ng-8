@@ -97,7 +97,7 @@ public class SpendingTest {
       )
     }
   )
-  @ScreenShotTest("img/expected_diagram_grouping_by_category.png")
+  @ScreenShotTest(value = "img/expected_diagram_grouping_by_category.png")
   void diagramComponentShouldGroupSpendingsByCategory(UserJson user, BufferedImage expected) {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
       .doLogin(user.username(), user.testData().password())
@@ -136,7 +136,7 @@ public class SpendingTest {
       ),
     }
   )
-  @ScreenShotTest("img/expected_diagram_grouping_by_archive_category.png")
+  @ScreenShotTest(value = "img/expected_diagram_grouping_by_archive_category.png")
   void diagramComponentShouldGroupSpendingsByArchiveCategory(UserJson user, BufferedImage expected) throws IOException {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
       .doLogin(user.username(), user.testData().password())
@@ -155,7 +155,7 @@ public class SpendingTest {
       currency = CurrencyValues.RUB
     )
   )
-  @ScreenShotTest("img/expected_diagram_after_edit.png")
+  @ScreenShotTest(value = "img/expected_diagram_after_edit.png")
   void diagramComponentShouldUpdatedAfterEditSpending(UserJson user, BufferedImage expected) {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
       .doLogin(user.username(), user.testData().password())
@@ -208,7 +208,7 @@ public class SpendingTest {
     }
   )
   @Flaky
-  @ScreenShotTest("img/currency_filter_expected.png")
+  @ScreenShotTest(value = "img/currency_filter_expected.png")
   void diagramComponentShouldUpdatedAfterFilterByCurrency(UserJson user, BufferedImage expected) {
     Selenide.open(CFG.frontUrl(), LoginPage.class)
       .doLogin(user.username(), user.testData().password())

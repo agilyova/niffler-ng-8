@@ -89,7 +89,7 @@ public class ProfileTest {
   }
 
   @ScreenShotTest(
-    "img/expected_avatar.png"
+    value = "img/expected_avatar.png"
   )
   @User
   void profileImageShouldBeAbleToUploaded(UserJson user, BufferedImage expected) {

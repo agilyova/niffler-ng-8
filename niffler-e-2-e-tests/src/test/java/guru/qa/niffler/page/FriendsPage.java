@@ -1,8 +1,11 @@
 package guru.qa.niffler.page;
 
+import com.codeborne.selenide.ClickOptions;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.config.Config;
 import io.qameta.allure.Step;
+
+import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byText;
@@ -17,8 +20,8 @@ public class FriendsPage {
   private final SelenideElement noFriendsTextElement = $(byText("There are no users yet"));
   private final SelenideElement friendsRequestTable = $("table:has(#requests)");
   private final SelenideElement friendsTable = $("table:has(#friends)");
-  private final SelenideElement confirmDialog = $("div[role = 'dialog']");
-  private final SelenideElement submitActionBtn = $(".MuiDialogActions-root>button:last-of-type");
+  private final SelenideElement popup = $("div[role = 'dialog']");
+  private final SelenideElement submitActionBtn = popup.$(".MuiDialogActions-root>button:last-of-type");
 
   public FriendsPage() {
     peopleTab.shouldBe(visible);
@@ -41,7 +44,8 @@ public class FriendsPage {
 
   @Step("Approve action")
   public FriendsPage approveAction() {
-    submitActionBtn.click();
+    popup.shouldBe(visible);
+    submitActionBtn.click(ClickOptions.usingJavaScript());
     spinnerElement.should(disappear);
     return this;
   }

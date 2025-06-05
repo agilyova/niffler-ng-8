@@ -15,20 +15,23 @@ import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
-public class SpendingTable {
+public class SpendingTable extends BaseComponent<SpendingTable> {
 
-  private final SelenideElement self = $("#spendings");
   private final SelenideElement noSpendingTitle = $(byText("There are no spendings"));
   private final ElementsCollection tableRows = self.$$("table>tbody tr");
-  private final SelenideElement deleteButton = $("#delete");
+  private final SelenideElement deleteButton = self.$("#delete");
   private final SelenideElement confirmDialogEl = $("div[role = 'dialog']");
   private final SelenideElement submitActionButton = confirmDialogEl.$("button:last-of-type");
   private final SelenideElement searchInputElement = $("input[aria-label='search']");
-  private final SelenideElement spinnerElement = $(".MuiCircularProgress-root");
-  private final SelenideElement currencyFilter = $("#currency");
+  private final SelenideElement currencyFilter = self.$("#currency");
   private final SelenideElement currencyList = $("ul[role='listbox']");
   private final ElementsCollection currencyListItems = $$("li[data-value]");
+  private final SelenideElement spinnerElement = $(".MuiCircularProgress-root");
   private final SearchField searchField = new SearchField();
+
+  public SpendingTable() {
+    super($("#spendings"));
+  }
 
   @Step("Edit spending {0}")
   public EditSpendingPage editSpending(String spendingDescription) {
@@ -87,5 +90,4 @@ public class SpendingTable {
       .should(visible);
     return this;
   }
-
 }

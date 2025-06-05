@@ -1,9 +1,6 @@
 package guru.qa.niffler.page;
 
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.SelenideElement;
+import com.codeborne.selenide.*;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.utils.ScreenDiffResult;
@@ -13,6 +10,7 @@ import org.junit.jupiter.api.Assertions;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byText;
@@ -32,7 +30,7 @@ public class ProfilePage {
   private final SelenideElement spinnerElement = categoriesContainer.$(".MuiCircularProgress-root");
   private final SelenideElement editCategoryNameInput = $("input[placeholder = 'Edit category']");
   private final SelenideElement submitActionBtn = $(".MuiDialogActions-root>button:last-of-type");
-  private final SelenideElement confirmDialog = $("div[role = 'dialog']");
+  private final SelenideElement popup = $("div[role = 'dialog']");
   private final SelenideElement uploadImageInput = $("#image__input");
   private final SelenideElement saveChangesButton = $(byText("Save changes"));
   private final SelenideElement profileImageElement = $("form .MuiAvatar-img");
@@ -53,11 +51,9 @@ public class ProfilePage {
 
   @Step("Archive category with name: {0.name}")
   public ProfilePage archiveCategory(CategoryJson categoryJson) {
-
     findCategory(categoryJson.name())
       .$(ARCHIVE_BUTTON_LOCATOR)
       .click();
-    confirmDialog.should(appear);
     return this;
   }
 
@@ -66,7 +62,6 @@ public class ProfilePage {
     findCategory(categoryJson.name())
       .$(UNARCHIVE_BUTTON_LOCATOR)
       .click();
-    confirmDialog.should(appear);
     return this;
   }
 
@@ -87,7 +82,8 @@ public class ProfilePage {
 
   @Step("Approve action")
   public ProfilePage approveAction() {
-    submitActionBtn.click();
+    popup.shouldBe(visible);
+    submitActionBtn.click(ClickOptions.usingJavaScript());
     spinnerElement.should(disappear);
     return this;
   }

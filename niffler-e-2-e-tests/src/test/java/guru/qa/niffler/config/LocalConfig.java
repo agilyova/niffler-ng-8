@@ -58,10 +58,4 @@ enum LocalConfig implements Config {
   public String currencyJdbcUrl() {
     return "jdbc:postgresql://127.0.0.1:5432/niffler-currency";
   }
-
-  @NotNull
-  @Override
-  public String ghUrl() {
-    return "https://api.github.com/";
-  }
 }

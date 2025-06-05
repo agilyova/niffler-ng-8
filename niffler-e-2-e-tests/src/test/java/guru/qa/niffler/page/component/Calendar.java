@@ -2,6 +2,7 @@ package guru.qa.niffler.page.component;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import com.fasterxml.jackson.databind.ser.Serializers;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -10,14 +11,18 @@ import static com.codeborne.selenide.Condition.appear;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 
-public class Calendar {
-  private final SelenideElement self = $(".MuiDateCalendar-root");
+public class Calendar extends BaseComponent<Calendar> {
+
   private final SelenideElement nextMonthButton = self.$("button[aria-label='Next month']");
   private final SelenideElement previousMonthButton = self.$("button[aria-label='Previous month']");
   private final SelenideElement yearSelectButton = self.$(".MuiPickersCalendarHeader-switchViewButton");
   private final SelenideElement yearAndMonthLabel = self.$(".MuiPickersCalendarHeader-label");
   private final ElementsCollection yearsList = self.$$(".MuiPickersYear-root");
   private final ElementsCollection days = self.$$(".MuiPickersDay-root");
+
+  public Calendar() {
+    super($(".MuiDateCalendar-root"));
+  }
 
   public void selectDateInCalendar(LocalDate date) {
     int year = date.getYear();
