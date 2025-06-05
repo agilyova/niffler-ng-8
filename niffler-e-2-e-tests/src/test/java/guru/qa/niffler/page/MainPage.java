@@ -1,6 +1,8 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.SelenideElement;
+import com.fasterxml.jackson.databind.ser.Serializers;
+import com.mifmif.common.regex.Main;
 import guru.qa.niffler.page.component.Header;
 import guru.qa.niffler.page.component.SpendingTable;
 import guru.qa.niffler.page.component.StatComponent;
@@ -9,7 +11,7 @@ import lombok.Getter;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
-public class MainPage {
+public class MainPage extends BasePage<MainPage> {
 
   private final SelenideElement spendingTableEl = $("#spendings");
 

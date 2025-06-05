@@ -2,9 +2,12 @@ package guru.qa.niffler.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import guru.qa.niffler.data.entity.userData.FriendshipStatus;
 import guru.qa.niffler.data.entity.userData.UserEntity;
 import guru.qa.niffler.model.enums.CurrencyValues;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -27,10 +30,12 @@ public record UserJson(
   @JsonProperty("photoSmall")
   String photoSmall,
   @JsonIgnore
+  FriendshipStatus friendshipStatus,
+  @JsonIgnore
   TestData testData
 ) {
 
-  public static UserJson fromEntity(UserEntity entity) {
+  public static @Nonnull UserJson fromEntity(@Nonnull UserEntity entity, @Nullable FriendshipStatus friendshipStatus) {
     return new UserJson(
       entity.getId(),
       entity.getUsername(),
@@ -40,6 +45,7 @@ public record UserJson(
       entity.getCurrency(),
       entity.getPhoto() != null && entity.getPhoto().length > 0 ? new String(entity.getPhoto(), StandardCharsets.UTF_8) : null,
       entity.getPhotoSmall() != null && entity.getPhotoSmall().length > 0 ? new String(entity.getPhotoSmall(), StandardCharsets.UTF_8) : null,
+      friendshipStatus,
       new TestData(
         null,
         new ArrayList<>(),
@@ -61,20 +67,47 @@ public record UserJson(
       currency,
       photo,
       photoSmall,
+      friendshipStatus,
       testData
     );
   }
 
   public UserJson withPassword(String password) {
-    return withTestData(
-      new TestData(
-        password,
-        testData.categories(),
-        testData.spendings(),
-        testData.incomeRequests(),
-        testData.outcomeRequests(),
-        testData.friends()
-      )
+    if (testData == null) {
+      return withTestData(
+        new TestData(
+          password,
+          new ArrayList<>(),
+          new ArrayList<>(),
+          new ArrayList<>(),
+          new ArrayList<>(),
+          new ArrayList<>()
+        ));
+    } else {
+      return withTestData(
+        new TestData(
+          password,
+          testData.categories(),
+          testData.spendings(),
+          testData.incomeRequests(),
+          testData.outcomeRequests(),
+          testData.friends()
+        ));
+    }
+  }
+
+  public @Nonnull UserJson addTestData(@Nonnull TestData testData) {
+    return new UserJson(
+      id,
+      username,
+      firstname,
+      surname,
+      fullname,
+      currency,
+      photo,
+      photoSmall,
+      friendshipStatus,
+      testData
     );
   }
 }

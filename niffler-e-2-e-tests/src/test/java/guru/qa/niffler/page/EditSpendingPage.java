@@ -7,7 +7,7 @@ import lombok.Getter;
 
 import static com.codeborne.selenide.Selenide.$;
 
-public class EditSpendingPage extends BasePage {
+public class EditSpendingPage extends BasePage<EditSpendingPage> {
 
   private final SelenideElement saveChangesButton = $("#save");
   @Getter

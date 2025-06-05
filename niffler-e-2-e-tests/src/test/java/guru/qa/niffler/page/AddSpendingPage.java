@@ -7,7 +7,7 @@ import lombok.Getter;
 
 import static com.codeborne.selenide.Selenide.$;
 
-public class AddSpendingPage extends BasePage {
+public class AddSpendingPage extends BasePage<AddSpendingPage> {
   private final SelenideElement addButton = $("#save");
   private final SelenideElement cancelButton = $("#cancel");
   @Getter

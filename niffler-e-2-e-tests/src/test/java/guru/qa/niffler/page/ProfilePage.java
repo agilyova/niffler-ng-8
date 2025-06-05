@@ -17,7 +17,7 @@ import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 
 
-public class ProfilePage {
+public class ProfilePage extends BasePage<ProfilePage> {
   public static final String URL = Config.getInstance().frontUrl() + "profile";
 
   public static final String EDIT_BUTTON_LOCATOR = "button[aria-label='Edit category']";
