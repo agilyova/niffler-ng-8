@@ -51,7 +51,8 @@ public class UsersDbClient implements UsersClient {
 
         authUserRepo.create(authUser);
         return UserJson.fromEntity(
-          userdataUserRepo.create(userEntity(username))
+          userdataUserRepo.create(userEntity(username)),
+          null
         );
       }
     );
@@ -71,7 +72,7 @@ public class UsersDbClient implements UsersClient {
             authUserRepo.create(authUser);
             UserEntity addressee = userdataUserRepo.create(userEntity(username));
             userdataUserRepo.addInvitation(addressee, targetEntity);
-            targetUser.testData().incomeRequests().add(UserJson.fromEntity(addressee));
+            targetUser.testData().incomeRequests().add(UserJson.fromEntity(addressee, null));
             return null;
           }
         );
@@ -92,7 +93,7 @@ public class UsersDbClient implements UsersClient {
             authUserRepo.create(authUser);
             UserEntity addressee = userdataUserRepo.create(userEntity(username));
             userdataUserRepo.addInvitation(targetEntity, addressee);
-            targetUser.testData().outcomeRequests().add(UserJson.fromEntity(addressee));
+            targetUser.testData().outcomeRequests().add(UserJson.fromEntity(addressee, null));
             return null;
           }
         );
@@ -113,7 +114,7 @@ public class UsersDbClient implements UsersClient {
             authUserRepo.create(authUser);
             UserEntity addressee = userdataUserRepo.create(userEntity(username));
             userdataUserRepo.addFriend(targetEntity, addressee);
-            targetUser.testData().friends().add(UserJson.fromEntity(addressee));
+            targetUser.testData().friends().add(UserJson.fromEntity(addressee, null));
             return null;
           }
         );
@@ -128,7 +129,7 @@ public class UsersDbClient implements UsersClient {
       .orElseThrow(
         () -> new IllegalArgumentException("User " + userName + " doesnt exist")
       );
-    return UserJson.fromEntity(userEntity);
+    return UserJson.fromEntity(userEntity, null);
   }
 
   //Todo так же удалять и spending, и categories

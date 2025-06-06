@@ -114,6 +114,7 @@ public class ProfileTest {
       .goToProfilePage()
       .updateProfileName(name)
       .saveChanges()
+      .checkAlertMessage("Profile successfully updated")
       .refreshPage()
       .checkProfileName(name);
   }

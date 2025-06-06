@@ -45,6 +45,7 @@ public class SpendingTest {
       .setDescription(spend.description())
       .getParentPage()
       .submitSpendingCreation()
+      .checkAlertMessage("New spending is successfully created")
       .getSpendingTable()
       .checkTableHaveExactSpends(spend);
   }
@@ -70,6 +71,7 @@ public class SpendingTest {
       .setDescription(newDescription)
       .getParentPage()
       .saveChanges()
+      .checkAlertMessage("Spending is edited successfully")
       .getSpendingTable()
       .searchForSpending(newDescription)
       .checkThatTableContains(newDescription);

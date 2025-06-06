@@ -1,5 +1,6 @@
 package guru.qa.niffler.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public record TestData(
@@ -10,4 +11,7 @@ public record TestData(
   List<UserJson> outcomeRequests,
   List<UserJson> friends
 ) {
+  public TestData(String password) {
+    this(password, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+  }
 }

@@ -9,7 +9,7 @@ import io.qameta.allure.Step;
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Selenide.$;
 
-public class RegisterPage {
+public class RegisterPage extends BasePage<RegisterPage> {
 
   public static final String URL = Config.getInstance().authUrl() + "register";
 

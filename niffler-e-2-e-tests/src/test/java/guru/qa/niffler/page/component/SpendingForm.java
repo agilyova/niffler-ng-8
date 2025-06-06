@@ -14,21 +14,22 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
-public class SpendingForm<T extends BasePage> {
-  private final SelenideElement amountInput = $("#amount");
-  private final SelenideElement currencyFilterInput = $("#currency");
+public class SpendingForm<T extends BasePage<T>> extends BaseComponent<SpendingForm<T>>{
+  private final SelenideElement amountInput = self.$("#amount");
+  private final SelenideElement currencyFilterInput = self.$("#currency");
   private final SelenideElement currencyList = $("ul[role='listbox']");
   private final ElementsCollection currencyListItems = $$("li[data-value]");
-  private final SelenideElement categoryInput = $("#category");
+  private final SelenideElement categoryInput = self.$("#category");
   private final ElementsCollection categoryItems = $$("#category~ul>li");
-  private final SelenideElement dateInput = $("input[name = 'date']");
-  private final SelenideElement calendarButton = $("input[name = 'date']~div");
-  private final SelenideElement descriptionInput = $("#description");
+  private final SelenideElement dateInput = self.$("input[name = 'date']");
+  private final SelenideElement calendarButton = self.$("input[name = 'date']~div");
+  private final SelenideElement descriptionInput = self.$("#description");
   private final Calendar calendar = new Calendar();
   @Getter
   private final T parentPage;
 
   public SpendingForm(T parentPage) {
+    super($("form.MuiGrid-root"));
     this.parentPage = parentPage;
   }
 

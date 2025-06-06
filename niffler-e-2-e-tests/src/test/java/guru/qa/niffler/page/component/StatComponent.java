@@ -15,13 +15,16 @@ import java.awt.image.BufferedImage;
 import static com.codeborne.selenide.Selenide.$;
 import static guru.qa.niffler.condition.StatConditions.*;
 
-public class StatComponent {
-  private final SelenideElement self = $("#stat");
+public class StatComponent extends BaseComponent<StatComponent> {
 
   private final SelenideElement diagramElement = self.$("canvas[role = 'img']");
   private final ElementsCollection badges = self.$$("#legend-container li");
   private final SelenideElement confirmDialog = $("div[role = 'dialog']");
   private final SelenideElement submitActionButton = confirmDialog.$("button:last-of-type");
+
+  public StatComponent() {
+    super($("#stat"));
+  }
 
   @SneakyThrows
   @Step("Check that diagram is equal to reference image")
