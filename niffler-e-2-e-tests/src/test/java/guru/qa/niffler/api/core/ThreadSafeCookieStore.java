@@ -1,6 +1,9 @@
 package guru.qa.niffler.api.core;
 
-import java.net.*;
+import java.net.CookieManager;
+import java.net.CookieStore;
+import java.net.HttpCookie;
+import java.net.URI;
 import java.util.List;
 
 public enum ThreadSafeCookieStore implements CookieStore {
@@ -46,7 +49,6 @@ public enum ThreadSafeCookieStore implements CookieStore {
   }
 
   public String cookieValue(String name) {
-    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + getCookies());
     return getCookies().stream()
       .filter(c -> name.equals(c.getName()))
       .map(HttpCookie::getValue)

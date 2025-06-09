@@ -15,6 +15,7 @@ import org.apache.hc.core5.http.HttpStatus;
 import retrofit2.Response;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static guru.qa.niffler.utils.RandomDataUtils.randomUserName;
@@ -132,5 +133,17 @@ public class UsersApiClient implements UsersClient {
   @Step("Delete user \"{0.username}\" with API")
   public void remove(UserJson user) {
     throw new UnsupportedOperationException("Method not implemented yet");
+  }
+
+  @Step("Get all users with API")
+  public List<UserJson> getAllUsers() {
+    final Response<List<UserJson>> response;
+    try {
+      response = userdataApi.getAllUsers("").execute();
+    } catch (IOException e) {
+      throw new AssertionError(e);
+    }
+    assertEquals(HttpStatus.SC_OK, response.code());
+    return response.body();
   }
 }

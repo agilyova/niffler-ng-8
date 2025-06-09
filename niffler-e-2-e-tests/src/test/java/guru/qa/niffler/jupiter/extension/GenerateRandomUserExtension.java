@@ -6,6 +6,7 @@ import guru.qa.niffler.utils.RandomDataUtils;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
+@Deprecated
 public class GenerateRandomUserExtension implements BeforeEachCallback, ParameterResolver {
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(GenerateRandomUserExtension.class);
 

@@ -5,7 +5,6 @@ import guru.qa.niffler.model.TestData;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.UsersClient;
 import guru.qa.niffler.service.impl.UsersApiClient;
-import guru.qa.niffler.service.impl.UsersDbClient;
 import guru.qa.niffler.utils.RandomDataUtils;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
@@ -65,8 +64,8 @@ public class UserExtension implements BeforeEachCallback, AfterEachCallback, Par
     if (userAlreadyExist != null && !userAlreadyExist.get() && user != null) {
       try {
         usersClient.remove(user);
+        userAlreadyExist.remove();
       } catch (Exception e) {
-
       }
     }
   }

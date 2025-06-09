@@ -11,6 +11,9 @@ public interface UserdataApi {
   @GET("internal/users/current")
   Call<UserJson> getUser(@Query("username") String username);
 
+  @GET("internal/users/all")
+  Call<List<UserJson>> getAllUsers(@Query("username") String username);
+
   @POST("internal/users/update")
   Call<UserJson> updateUserInfo(@Body UserJson user);
 
