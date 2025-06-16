@@ -2,7 +2,6 @@ package guru.qa.niffler.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import guru.qa.niffler.data.entity.userData.FriendshipStatus;
 import guru.qa.niffler.data.entity.userData.UserEntity;
 import guru.qa.niffler.model.enums.CurrencyValues;
 
@@ -29,7 +28,7 @@ public record UserJson(
   String photo,
   @JsonProperty("photoSmall")
   String photoSmall,
-  @JsonIgnore
+  @JsonProperty("friendshipStatus")
   FriendshipStatus friendshipStatus,
   @JsonIgnore
   TestData testData
