@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.ZoneId;
 
 @WebTest

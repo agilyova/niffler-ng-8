@@ -6,7 +6,6 @@ import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.SpendClient;
-import guru.qa.niffler.service.impl.SpendApiClient;
 import guru.qa.niffler.service.impl.SpendDbClient;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
@@ -27,7 +26,7 @@ public class SpendExtension implements BeforeEachCallback, AfterEachCallback, Pa
       .ifPresent(
         userAnnotation -> {
           if (userAnnotation.spendings().length > 0) {
-            UserJson createdUser = UserExtension.createdUser();
+            UserJson createdUser = UserExtension.getUser();
             final String username = createdUser != null
               ? createdUser.username()
               : userAnnotation.userName();

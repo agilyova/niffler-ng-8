@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Assertions;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byText;

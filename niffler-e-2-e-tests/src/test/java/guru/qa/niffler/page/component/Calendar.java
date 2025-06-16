@@ -2,7 +2,6 @@ package guru.qa.niffler.page.component;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import com.fasterxml.jackson.databind.ser.Serializers;
 
 import java.time.LocalDate;
 import java.time.Month;

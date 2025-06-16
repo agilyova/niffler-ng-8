@@ -57,6 +57,10 @@ public record UserJson(
     );
   }
 
+  public UserJson(@Nonnull String username) {
+    this(null, username, null, null, null, null, null, null, null, null);
+  }
+
   public UserJson withTestData(TestData testData) {
     return new UserJson(
       id,

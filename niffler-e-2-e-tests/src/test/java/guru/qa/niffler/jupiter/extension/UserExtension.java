@@ -48,10 +48,11 @@ public class UserExtension implements BeforeEachCallback, AfterEachCallback, Par
             usersClient.createIncomeInvitations(user, userAnnotation.amountOfIncomeInvitations());
           }
 
-          context.getStore(NAMESPACE).put(
+          setUser(user.withPassword(DEFAULT_PASSWORD));
+/*          context.getStore(NAMESPACE).put(
             context.getUniqueId(),
             user.withPassword(DEFAULT_PASSWORD)
-          );
+          );*/
         }
       );
   }
@@ -61,13 +62,13 @@ public class UserExtension implements BeforeEachCallback, AfterEachCallback, Par
   public void afterEach(ExtensionContext context) throws Exception {
     UserJson user = context.getStore(NAMESPACE).get(context.getUniqueId(), UserJson.class);
 
-    if (userAlreadyExist != null && !userAlreadyExist.get() && user != null) {
+    if (userAlreadyExist != null && userAlreadyExist.get() != null && !userAlreadyExist.get() && user != null) {
       try {
         usersClient.remove(user);
-        userAlreadyExist.remove();
       } catch (Exception e) {
       }
     }
+    userAlreadyExist.remove();
   }
 
   @Override
@@ -77,10 +78,15 @@ public class UserExtension implements BeforeEachCallback, AfterEachCallback, Par
 
   @Override
   public UserJson resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-    return createdUser();
+    return getUser();
   }
 
-  public static @Nullable UserJson createdUser() {
+  public static void setUser(UserJson user) {
+    final ExtensionContext context = TestMethodContextExtension.getContext();
+    context.getStore(NAMESPACE).put(context.getUniqueId(), user);
+  }
+
+  public static @Nullable UserJson getUser() {
     final ExtensionContext context = TestMethodContextExtension.getContext();
     return context.getStore(NAMESPACE).get(context.getUniqueId(), UserJson.class);
   }

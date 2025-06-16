@@ -32,6 +32,10 @@ public abstract class  RestClient {
     this(baseUrl, followRedirect, JacksonConverterFactory.create(), HttpLoggingInterceptor.Level.BODY);
   }
 
+  public RestClient(String baseUrl, boolean followRedirect, @Nullable Interceptor... interceptors) {
+    this(baseUrl, followRedirect, JacksonConverterFactory.create(), HttpLoggingInterceptor.Level.HEADERS, interceptors);
+  }
+
   public RestClient(String baseUrl, Converter.Factory factory) {
     this(baseUrl, false, factory, HttpLoggingInterceptor.Level.BODY);
   }
@@ -46,7 +50,7 @@ public abstract class  RestClient {
 
     if (ArrayUtils.isNotEmpty(interceptors)) {
       for (Interceptor interceptor : interceptors) {
-        builder.addInterceptor(interceptor);
+        builder.addNetworkInterceptor(interceptor);
       }
     }
 

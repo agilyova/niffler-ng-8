@@ -25,7 +25,7 @@ public class CategoryExtension implements BeforeEachCallback, AfterEachCallback,
       .ifPresent(
         userAnnotation -> {
           if (userAnnotation.categories().length > 0) {
-            UserJson createdUser = UserExtension.createdUser();
+            UserJson createdUser = UserExtension.getUser();
             final String username = createdUser != null
               ? createdUser.username()
               : userAnnotation.userName();

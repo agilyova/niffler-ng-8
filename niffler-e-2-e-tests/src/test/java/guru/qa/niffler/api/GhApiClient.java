@@ -1,13 +1,9 @@
 package guru.qa.niffler.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import guru.qa.niffler.config.Config;
 import guru.qa.niffler.service.RestClient;
-import okhttp3.OkHttpClient;
 import org.apache.hc.core5.http.HttpStatus;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;

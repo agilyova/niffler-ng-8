@@ -2,7 +2,9 @@ package guru.qa.niffler.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import guru.qa.niffler.api.AuthApi;
+import guru.qa.niffler.api.core.CodeInterceptor;
 import guru.qa.niffler.api.core.ThreadSafeCookieStore;
+import guru.qa.niffler.jupiter.extension.ApiLoginExtension;
 import guru.qa.niffler.service.RestClient;
 import guru.qa.niffler.utils.OauthUtils;
 import org.apache.hc.core5.http.HttpStatus;
@@ -27,8 +29,8 @@ public class AuthApiClient extends RestClient {
   private final AuthApi authApi;
 
   public AuthApiClient() {
-    super(CFG.authUrl(), true);
-    authApi = retrofit.create(AuthApi.class);
+    super(CFG.authUrl(), true, new CodeInterceptor());
+    this.authApi = retrofit.create(AuthApi.class);
   }
 
   public String loginAs(String userName, String password) {
@@ -61,7 +63,6 @@ public class AuthApiClient extends RestClient {
 
   private String login(String userName, String password) {
     Response<Void> response;
-
     try {
       response = authApi.login(
         ThreadSafeCookieStore.INSTANCE.cookieValue(XSRF_TOKEN),
@@ -73,7 +74,7 @@ public class AuthApiClient extends RestClient {
     }
 
     assertEquals(HttpStatus.SC_OK, response.code());
-    return response.raw().request().url().queryParameter(CODE);
+    return ApiLoginExtension.getCode();
   }
 
   private String token(String code, String codeVerifier) {
