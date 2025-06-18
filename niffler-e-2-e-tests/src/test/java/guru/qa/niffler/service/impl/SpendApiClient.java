@@ -18,7 +18,7 @@ public class SpendApiClient extends RestClient implements SpendClient {
 
   private final SpendApi spendApi;
 
-  public SpendApiClient(String baseUrl) {
+  public SpendApiClient() {
     super(CFG.spendUrl());
     this.spendApi = retrofit.create(SpendApi.class);
   }
@@ -79,5 +79,29 @@ public class SpendApiClient extends RestClient implements SpendClient {
   @Step("Remove category with API")
   public void removeCategory(CategoryJson category) {
     throw new UnsupportedOperationException("Method not implemented yet");
+  }
+
+  @Step("Get all categories with API")
+  public List<CategoryJson> getAllCategories(String username) {
+    Response<List<CategoryJson>> response;
+    try {
+      response = spendApi.getCategories(username).execute();
+    } catch (IOException e) {
+      throw new AssertionError(e);
+    }
+    assertEquals(HttpStatus.SC_OK, response.code());
+    return response.body();
+  }
+
+  @Step("Get all spends with API")
+  public List<SpendJson> getAllSpends(String username) {
+    Response<List<SpendJson>> response;
+    try {
+      response = spendApi.getSpends(username).execute();
+    } catch (IOException e) {
+      throw new AssertionError(e);
+    }
+    assertEquals(HttpStatus.SC_OK, response.code());
+    return response.body();
   }
 }

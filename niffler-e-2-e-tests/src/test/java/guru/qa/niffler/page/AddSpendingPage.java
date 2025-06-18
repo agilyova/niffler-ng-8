@@ -1,6 +1,7 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.config.Config;
 import guru.qa.niffler.page.component.SpendingForm;
 import io.qameta.allure.Step;
 import lombok.Getter;
@@ -8,6 +9,9 @@ import lombok.Getter;
 import static com.codeborne.selenide.Selenide.$;
 
 public class AddSpendingPage extends BasePage<AddSpendingPage> {
+
+  public static final String URL = Config.getInstance().frontUrl() + "spending";
+
   private final SelenideElement addButton = $("#save");
   private final SelenideElement cancelButton = $("#cancel");
   @Getter

@@ -6,8 +6,11 @@ import guru.qa.niffler.api.core.ThreadSafeCookieStore;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.ApiLogin;
 import guru.qa.niffler.jupiter.annotation.Token;
+import guru.qa.niffler.model.TestData;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.impl.AuthApiClient;
+import guru.qa.niffler.service.impl.SpendApiClient;
+import guru.qa.niffler.service.impl.UsersApiClient;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.openqa.selenium.Cookie;
@@ -18,6 +21,8 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
   private static final Config CFG = Config.getInstance();
 
   private final AuthApiClient authApiClient = new AuthApiClient();
+  private final UsersApiClient usersApiClient = new UsersApiClient();
+  private final SpendApiClient spendApiClient = new SpendApiClient();
   private final boolean setupBrowser;
 
   private ApiLoginExtension(boolean setupBrowser) {
@@ -48,9 +53,7 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
             }
             userToLogin = userFromUserExtension;
           } else {
-            UserJson fakeUser = new UserJson(
-              apiLogin.username()).withPassword(apiLogin.password()
-            );
+            UserJson fakeUser = fillUserData(apiLogin.username(), apiLogin.password());
             if (userFromUserExtension != null) {
               throw new IllegalStateException("@User mast NOT be present if @ApiLogin is NOT empty");
             }
@@ -109,5 +112,18 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
       "JSESSIONID",
       ThreadSafeCookieStore.INSTANCE.cookieValue("JSESSIONID")
     );
+  }
+
+  private UserJson fillUserData(String username, String password) {
+    UserJson user = usersApiClient.findUserByUsername(username);
+    TestData testData = new TestData(
+      password,
+      spendApiClient.getAllCategories(username),
+      spendApiClient.getAllSpends(username),
+      usersApiClient.getOutComeInvitations(username),
+      usersApiClient.getIncomeInvitations(username),
+      usersApiClient.getFriends(username)
+    );
+    return user.withTestData(testData);
   }
 }

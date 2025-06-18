@@ -5,6 +5,7 @@ import guru.qa.niffler.api.AuthApi;
 import guru.qa.niffler.api.UserdataApi;
 import guru.qa.niffler.api.core.ThreadSafeCookieStore;
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.model.FriendshipStatus;
 import guru.qa.niffler.model.TestData;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.RestClient;
@@ -136,14 +137,44 @@ public class UsersApiClient implements UsersClient {
   }
 
   @Step("Get all users with API")
-  public List<UserJson> getAllUsers() {
+  public List<UserJson> getAllUsers(String username) {
     final Response<List<UserJson>> response;
     try {
-      response = userdataApi.getAllUsers("").execute();
+      response = userdataApi.getAllUsers(username).execute();
     } catch (IOException e) {
       throw new AssertionError(e);
     }
     assertEquals(HttpStatus.SC_OK, response.code());
     return response.body();
+  }
+
+  @Step("Get friends with API")
+  public List<UserJson> getFriends(String username) {
+    final Response<List<UserJson>> response;
+    try {
+      response = userdataApi.friends(username).execute();
+    } catch (IOException e) {
+      throw new AssertionError(e);
+    }
+    assertEquals(HttpStatus.SC_OK, response.code());
+    return response.body();
+  }
+
+  @Step("Get income invitations with API")
+  public List<UserJson> getIncomeInvitations(String username) {
+    return getAllUsers(username)
+      .stream()
+      .filter(
+        user -> FriendshipStatus.INVITE_RECEIVED.equals(user.friendshipStatus()))
+      .toList();
+  }
+
+  @Step("Get outcome invitations with API")
+  public List<UserJson> getOutComeInvitations(String username) {
+    return getAllUsers(username)
+      .stream()
+      .filter(
+        user -> FriendshipStatus.INVITE_SENT.equals(user.friendshipStatus()))
+      .toList();
   }
 }
