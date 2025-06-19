@@ -1,7 +1,7 @@
 package guru.qa.niffler.api;
 
-import guru.qa.niffler.model.CategoryJson;
-import guru.qa.niffler.model.SpendJson;
+import guru.qa.niffler.model.rest.CategoryJson;
+import guru.qa.niffler.model.rest.SpendJson;
 import retrofit2.Call;
 import retrofit2.http.*;
 

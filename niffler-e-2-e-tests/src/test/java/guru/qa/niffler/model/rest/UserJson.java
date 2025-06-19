@@ -1,9 +1,11 @@
-package guru.qa.niffler.model;
+package guru.qa.niffler.model.rest;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import guru.qa.niffler.data.entity.userData.UserEntity;
+import guru.qa.niffler.model.TestData;
 import guru.qa.niffler.model.enums.CurrencyValues;
+import guru.qa.niffler.model.enums.FriendshipStatus;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

@@ -4,7 +4,7 @@ import com.codeborne.selenide.Selenide;
 import guru.qa.niffler.jupiter.annotation.ApiLogin;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.meta.WebTest;
-import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.model.rest.UserJson;
 import guru.qa.niffler.page.AllPeoplePage;
 import guru.qa.niffler.page.FriendsPage;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ public class FriendsTest {
   }
 
   @User(
-    amountOfFriends = 1
+    friends = 1
   )
   @ApiLogin
   @Test
@@ -33,7 +33,7 @@ public class FriendsTest {
   }
 
   @User(
-    amountOfOutcomeInvitations = 1
+    outcomeInvitations = 1
   )
   @ApiLogin
   @Test
@@ -44,7 +44,7 @@ public class FriendsTest {
   }
 
   @User(
-    amountOfIncomeInvitations = 1
+    incomeInvitations = 1
   )
   @ApiLogin
   @Test
@@ -54,7 +54,7 @@ public class FriendsTest {
   }
 
   @User(
-    amountOfIncomeInvitations = 1
+    incomeInvitations = 1
   )
   @ApiLogin
   @Test
@@ -67,7 +67,7 @@ public class FriendsTest {
   }
 
   @User(
-    amountOfIncomeInvitations = 1
+    incomeInvitations = 1
   )
   @ApiLogin
   @Test

@@ -20,7 +20,7 @@ public class OauthUtils {
       byte[] hash = digest.digest(codeVerifier.getBytes(StandardCharsets.UTF_8));
       return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
     } catch (NoSuchAlgorithmException e) {
-      throw new RuntimeException("Failed to generate code challenge",e);
+      throw new RuntimeException("Failed to generate code challenge", e);
     }
   }
 }

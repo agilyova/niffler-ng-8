@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 
-public abstract class  RestClient {
+public abstract class RestClient {
 
   protected static final Config CFG = Config.getInstance();
 

@@ -14,7 +14,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
-public class SpendingForm<T extends BasePage<T>> extends BaseComponent<SpendingForm<T>>{
+public class SpendingForm<T extends BasePage<T>> extends BaseComponent<SpendingForm<T>> {
   private final SelenideElement amountInput = self.$("#amount");
   private final SelenideElement currencyFilterInput = self.$("#currency");
   private final SelenideElement currencyList = $("ul[role='listbox']");

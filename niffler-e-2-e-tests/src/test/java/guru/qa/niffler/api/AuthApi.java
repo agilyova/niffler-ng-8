@@ -28,8 +28,8 @@ public interface AuthApi {
   @FormUrlEncoded
   @POST("login")
   Call<Void> login(@Field("_csrf") String csrf,
-                     @Field("username") String username,
-                     @Field("password") String password
+                   @Field("username") String username,
+                   @Field("password") String password
   );
 
   @FormUrlEncoded

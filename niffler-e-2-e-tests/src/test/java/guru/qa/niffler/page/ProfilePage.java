@@ -2,7 +2,7 @@ package guru.qa.niffler.page;
 
 import com.codeborne.selenide.*;
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.model.CategoryJson;
+import guru.qa.niffler.model.rest.CategoryJson;
 import guru.qa.niffler.utils.ScreenDiffResult;
 import io.qameta.allure.Step;
 import lombok.SneakyThrows;

@@ -1,9 +1,9 @@
 package guru.qa.niffler.utils;
 
 import com.github.javafaker.Faker;
-import guru.qa.niffler.model.CategoryJson;
-import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.enums.CurrencyValues;
+import guru.qa.niffler.model.rest.CategoryJson;
+import guru.qa.niffler.model.rest.SpendJson;
 
 import java.util.Random;
 import java.util.concurrent.TimeUnit;

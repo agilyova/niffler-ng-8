@@ -1,7 +1,7 @@
 package guru.qa.niffler.api.validation;
 
 import guru.qa.niffler.api.SpendApiClient;
-import guru.qa.niffler.model.CategoryJson;
+import guru.qa.niffler.model.rest.CategoryJson;
 import io.qameta.allure.Step;
 import org.junit.jupiter.api.Assertions;
 

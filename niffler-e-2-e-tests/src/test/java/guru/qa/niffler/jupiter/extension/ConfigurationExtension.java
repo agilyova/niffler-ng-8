@@ -17,7 +17,7 @@ public class ConfigurationExtension implements BeforeAllCallback {
       "--remote-allow-origins=*"
     );
     Configuration.browser = "chrome";
-    Configuration.browserSize="1920x1080";
+    Configuration.browserSize = "1920x1080";
     Configuration.browserCapabilities = options;
   }
 }

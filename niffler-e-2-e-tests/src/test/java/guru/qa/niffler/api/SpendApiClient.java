@@ -1,9 +1,9 @@
 package guru.qa.niffler.api;
 
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.model.CategoryJson;
-import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.enums.CurrencyValues;
+import guru.qa.niffler.model.rest.CategoryJson;
+import guru.qa.niffler.model.rest.SpendJson;
 import okhttp3.OkHttpClient;
 import org.apache.hc.core5.http.HttpStatus;
 import retrofit2.Response;

@@ -2,7 +2,7 @@ package guru.qa.niffler.jupiter.extension;
 
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.TestData;
-import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.model.rest.UserJson;
 import guru.qa.niffler.service.UsersClient;
 import guru.qa.niffler.service.impl.UsersApiClient;
 import guru.qa.niffler.utils.RandomDataUtils;
@@ -38,14 +38,14 @@ public class UserExtension implements BeforeEachCallback, AfterEachCallback, Par
             user = usersClient.findUserByUsername(userAnnotation.userName());
             userAlreadyExist.set(true);
           }
-          if (userAnnotation.amountOfFriends() > 0) {
-            usersClient.createFriends(user, userAnnotation.amountOfFriends());
+          if (userAnnotation.friends() > 0) {
+            usersClient.createFriends(user, userAnnotation.friends());
           }
-          if (userAnnotation.amountOfOutcomeInvitations() > 0) {
-            usersClient.createOutcomeInvitations(user, userAnnotation.amountOfOutcomeInvitations());
+          if (userAnnotation.outcomeInvitations() > 0) {
+            usersClient.createOutcomeInvitations(user, userAnnotation.outcomeInvitations());
           }
-          if (userAnnotation.amountOfIncomeInvitations() > 0) {
-            usersClient.createIncomeInvitations(user, userAnnotation.amountOfIncomeInvitations());
+          if (userAnnotation.incomeInvitations() > 0) {
+            usersClient.createIncomeInvitations(user, userAnnotation.incomeInvitations());
           }
 
           setUser(user.withPassword(DEFAULT_PASSWORD));
