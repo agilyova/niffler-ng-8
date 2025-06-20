@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static guru.qa.niffler.model.enums.FriendshipStatus.INVITE_RECEIVED;
 import static guru.qa.niffler.utils.RandomDataUtils.randomUserName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -75,7 +76,7 @@ public class UsersApiClient implements UsersClient {
           throw new AssertionError(e);
         }
         assertEquals(HttpStatus.SC_OK, response.code());
-        targetUser.testData().incomeRequests().add(requester);
+        targetUser.testData().incomeRequests().add(requester.withFriendShipStatus(INVITE_RECEIVED));
       }
     }
   }
@@ -112,7 +113,7 @@ public class UsersApiClient implements UsersClient {
           throw new AssertionError(e);
         }
         assertEquals(HttpStatus.SC_OK, response.code());
-        targetUser.testData().friends().add(requester);
+        targetUser.testData().friends().add(requester.withFriendShipStatus(FriendshipStatus.FRIEND));
       }
     }
   }
@@ -162,10 +163,10 @@ public class UsersApiClient implements UsersClient {
 
   @Step("Get income invitations with API")
   public List<UserJson> getIncomeInvitations(String username) {
-    return getAllUsers(username)
+    return getFriends(username)
       .stream()
       .filter(
-        user -> FriendshipStatus.INVITE_RECEIVED.equals(user.friendshipStatus()))
+        user -> INVITE_RECEIVED.equals(user.friendshipStatus()))
       .toList();
   }
 

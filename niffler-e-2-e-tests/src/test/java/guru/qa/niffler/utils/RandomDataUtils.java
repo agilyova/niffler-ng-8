@@ -31,6 +31,10 @@ public class RandomDataUtils {
     return faker.internet().password(minLength, maxLength);
   }
 
+  public static String randomPassword() {
+    return randomPassword(5, 6);
+  }
+
   public static String randomCategoryName() {
     return faker.commerce().productName();
   }

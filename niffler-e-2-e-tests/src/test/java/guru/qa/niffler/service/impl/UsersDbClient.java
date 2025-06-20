@@ -11,6 +11,7 @@ import guru.qa.niffler.data.repository.impl.hibernate.AuthUserRepositoryHibernat
 import guru.qa.niffler.data.repository.impl.hibernate.UserdataUserRepositoryHibernate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.enums.CurrencyValues;
+import guru.qa.niffler.model.enums.FriendshipStatus;
 import guru.qa.niffler.model.rest.UserJson;
 import guru.qa.niffler.service.UsersClient;
 import guru.qa.niffler.utils.RandomDataUtils;
@@ -114,7 +115,7 @@ public class UsersDbClient implements UsersClient {
             authUserRepo.create(authUser);
             UserEntity addressee = userdataUserRepo.create(userEntity(username));
             userdataUserRepo.addFriend(targetEntity, addressee);
-            targetUser.testData().friends().add(UserJson.fromEntity(addressee, null));
+            targetUser.testData().friends().add(UserJson.fromEntity(addressee, FriendshipStatus.FRIEND));
             return null;
           }
         );
