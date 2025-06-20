@@ -59,10 +59,36 @@ public record UserJson(
   }
 
   public UserJson(@Nonnull String username) {
-    this(null, username, null, null, null, null, null, null, null, null);
+    this(
+      null
+      , username,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    );
   }
 
   public UserJson withTestData(TestData testData) {
+    return new UserJson(
+      id,
+      username,
+      firstname,
+      surname,
+      fullname,
+      currency,
+      photo,
+      photoSmall,
+      friendshipStatus,
+      testData
+    );
+  }
+
+  public UserJson withFriendShipStatus(FriendshipStatus friendshipStatus) {
     return new UserJson(
       id,
       username,

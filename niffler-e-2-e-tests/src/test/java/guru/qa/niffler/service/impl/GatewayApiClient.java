@@ -1,12 +1,8 @@
 package guru.qa.niffler.service.impl;
 
 import guru.qa.niffler.api.GatewayApi;
-import guru.qa.niffler.api.SpendApi;
-import guru.qa.niffler.model.rest.CategoryJson;
-import guru.qa.niffler.model.rest.SpendJson;
 import guru.qa.niffler.model.rest.UserJson;
 import guru.qa.niffler.service.RestClient;
-import guru.qa.niffler.service.SpendClient;
 import io.qameta.allure.Step;
 import org.apache.hc.core5.http.HttpStatus;
 import retrofit2.Response;
@@ -26,7 +22,7 @@ public class GatewayApiClient extends RestClient {
     this.gatewayApi = retrofit.create(GatewayApi.class);
   }
 
-  @Step("Get all friends & income invitations using api/friends/all with API")
+  @Step("Get all friends & income invitations using api/friends/all endpoint")
   public List<UserJson> getAllFriends(String token, @Nullable String searchQuery) {
     Response<List<UserJson>> response;
     try {
@@ -36,5 +32,49 @@ public class GatewayApiClient extends RestClient {
     }
     assertEquals(HttpStatus.SC_OK, response.code());
     return response.body();
+  }
+
+  @Step("Accept invitation using api/invitations/accept endpoint")
+  public Response<UserJson> acceptInvitation(String token, UserJson friend) {
+    Response<UserJson> response;
+    try {
+      response = gatewayApi.acceptInvitation(token, friend).execute();
+    } catch (IOException e) {
+      throw new AssertionError(e);
+    }
+    return response;
+  }
+
+  @Step("Decline invitation using api/invitations/decline endpoint")
+  public Response<UserJson> declineInvitation(String token, UserJson friend) {
+    Response<UserJson> response;
+    try {
+      response = gatewayApi.declineInvitation(token, friend).execute();
+    } catch (IOException e) {
+      throw new AssertionError(e);
+    }
+    return response;
+  }
+
+  @Step("Send invitation using api/invitations/send endpoint")
+  public Response<UserJson> sendInvitation(String token, UserJson friend) {
+    Response<UserJson> response;
+    try {
+      response = gatewayApi.sendInvitation(token, friend).execute();
+    } catch (IOException e) {
+      throw new AssertionError(e);
+    }
+    return response;
+  }
+
+  @Step("Remove friend using api/friends/remove endpoint")
+  public Response<Void> removeFriend(String token, @Nullable String targetUsername) {
+    Response<Void> response;
+    try {
+      response = gatewayApi.removeFriend(token, targetUsername).execute();
+    } catch (IOException e) {
+      throw new AssertionError(e);
+    }
+    return response;
   }
 }
