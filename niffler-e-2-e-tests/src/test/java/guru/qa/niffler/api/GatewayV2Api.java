@@ -1,10 +1,9 @@
-package guru.qa.niffler.api.validation;
+package guru.qa.niffler.api;
 
 import guru.qa.niffler.model.enums.CurrencyValues;
 import guru.qa.niffler.model.enums.DataFilterValues;
 import guru.qa.niffler.model.pageable.RestResponsePage;
 import guru.qa.niffler.model.rest.*;
-import org.springframework.data.domain.Page;
 import retrofit2.Call;
 import retrofit2.http.*;
 
