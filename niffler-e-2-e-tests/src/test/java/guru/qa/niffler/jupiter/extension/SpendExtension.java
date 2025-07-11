@@ -10,6 +10,8 @@ import guru.qa.niffler.service.impl.SpendDbClient;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,10 +34,14 @@ public class SpendExtension implements BeforeEachCallback, AfterEachCallback, Pa
               : userAnnotation.userName();
 
             final List<SpendJson> createdSpendings = new ArrayList<>();
+
+            LocalDate today = LocalDate.now();
+            ZoneId moscow = ZoneId.of("Europe/Moscow");
+
             for (Spend spend : userAnnotation.spendings()) {
               SpendJson spendJson = new SpendJson(
                 null,
-                new Date(),
+                Date.from(today.atStartOfDay(moscow).toInstant()),
                 new CategoryJson(
                   null,
                   spend.category(),
